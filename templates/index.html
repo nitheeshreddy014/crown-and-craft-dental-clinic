@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ clinic_name }} | {{ doctor_name }} - Premium Dental Care</title>
+    <meta name="description" content="Experience world-class dental care at {{ clinic_name }} with {{ doctor_name }}. Book your appointment today for a brighter, healthier smile.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ========== LOADING SCREEN ========== -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader-content">
+            <div class="tooth-loader">
+                <svg viewBox="0 0 100 120" class="tooth-svg">
+                    <path d="M50 5 C30 5 15 20 15 40 C15 55 20 65 25 80 C28 90 30 100 35 110 C38 115 42 118 50 118 C58 118 62 115 65 110 C70 100 72 90 75 80 C80 65 85 55 85 40 C85 20 70 5 50 5Z" fill="none" stroke="url(#toothGrad)" stroke-width="3" class="tooth-path"/>
+                    <defs>
+                        <linearGradient id="toothGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <p class="loader-text">{{ clinic_name }}</p>
+            <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <!-- ========== NAVIGATION ========== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <span class="logo-icon">🦷</span>
+                <span class="logo-text">Crown <span class="logo-highlight">& Craft</span></span>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#appointments" class="nav-link">Appointments</a></li>
+                <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="/login" class="nav-link nav-admin-link">🔒 Admin</a></li>
+            </ul>
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="hero" id="home">
+        <div class="hero-bg-animation"></div>
+        <div class="hero-particles">
+            <div class="floating-element fe-1">🦷</div>
+            <div class="floating-element fe-2">✨</div>
+            <div class="floating-element fe-3">😁</div>
+            <div class="floating-element fe-4">💎</div>
+            <div class="floating-element fe-5">🦷</div>
+            <div class="floating-element fe-6">⭐</div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge reveal">🏆 Award-Winning Dental Care</div>
+            <h1 class="hero-title reveal">
+                Your <span class="gradient-text">Smile</span>,<br>Our <span class="gradient-text">Passion</span>
+            </h1>
+            <p class="hero-subtitle reveal">
+                Experience premium dental care with cutting-edge technology and a gentle touch.
+                {{ doctor_name }} and our expert team are dedicated to crafting your perfect smile.
+            </p>
+            <div class="hero-buttons reveal">
+                <a href="#appointments" class="btn btn-primary btn-glow">
+                    <span>Book Appointment</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="#services" class="btn btn-secondary">
+                    <span>Our Services</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+            </div>
+            <div class="hero-trust reveal">
+                <div class="trust-item">
+                    <span class="trust-icon">⭐</span>
+                    <span>4.9/5 Rating</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <span class="trust-icon">👥</span>
+                    <span>10,000+ Patients</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <span class="trust-icon">🏅</span>
+                    <span>15+ Years Exp.</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+            <span>Scroll Down</span>
+        </div>
+    </section>
+
+    <!-- ========== ABOUT SECTION ========== -->
+    <section class="section about-section" id="about">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">About Us</span>
+                <h2 class="section-title">Where <span class="gradient-text">Excellence</span> Meets Compassion</h2>
+                <p class="section-subtitle">Dedicated to providing the highest standard of dental care in a comfortable and welcoming environment.</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-card reveal-left">
+                    <div class="about-card-icon">🏥</div>
+                    <h3>Our Clinic</h3>
+                    <p>{{ clinic_name }} is a state-of-the-art dental facility equipped with the latest technology in dental care. Our modern clinic is designed to provide a relaxing and comfortable experience for every patient.</p>
+                    <ul class="about-features">
+                        <li><span class="check-icon">✓</span> Advanced Digital X-Ray Technology</li>
+                        <li><span class="check-icon">✓</span> Sterilized &amp; Hygienic Environment</li>
+                        <li><span class="check-icon">✓</span> Comfortable Patient Lounge</li>
+                        <li><span class="check-icon">✓</span> Latest Dental Equipment</li>
+                        <li><span class="check-icon">✓</span> Pain-Free Treatment Options</li>
+                    </ul>
+                </div>
+                <div class="about-card reveal-right">
+                    <div class="about-card-icon">👨‍⚕️</div>
+                    <div style="text-align:center; margin:16px 0;">
+                        <img src="/static/images/maneesh.png" alt="Dr. Maneesh Reddy Pocharam" 
+                             style="width:160px; height:160px; border-radius:50%; object-fit:cover; 
+                             border:4px solid rgba(14,165,233,0.4); 
+                             box-shadow:0 8px 30px rgba(14,165,233,0.2);">
+                    </div>
+                    <h3>{{ doctor_name }}</h3>
+                    <p>With over 15 years of experience in dentistry, {{ doctor_name }} is renowned for providing exceptional dental care with a gentle, patient-centered approach. Specializing in cosmetic dentistry and complex dental procedures.</p>
+                    <ul class="about-features">
+                        <li><span class="check-icon">✓</span> BDS, MDS - Prosthodontics</li>
+                        <li><span class="check-icon">✓</span> 15+ Years of Clinical Experience</li>
+                        <li><span class="check-icon">✓</span> Expert in Smile Designing</li>
+                        <li><span class="check-icon">✓</span> Member - Indian Dental Association</li>
+                        <li><span class="check-icon">✓</span> Committed to Continuing Education</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Stats Counter -->
+            <div class="stats-row reveal">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-suffix">+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="10000">0</div>
+                    <div class="stat-suffix">+</div>
+                    <div class="stat-label">Happy Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="25">0</div>
+                    <div class="stat-suffix">+</div>
+                    <div class="stat-label">Services Offered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="4.9" data-decimal="true">0</div>
+                    <div class="stat-suffix">⭐</div>
+                    <div class="stat-label">Patient Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SERVICES SECTION ========== -->
+    <section class="section services-section" id="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Our Services</span>
+                <h2 class="section-title">Comprehensive <span class="gradient-text">Dental Care</span> Solutions</h2>
+                <p class="section-subtitle">We offer a wide range of dental services to help you achieve and maintain a healthy, beautiful smile.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <div class="service-icon">🦷</div>
+                    <div class="service-content">
+                        <h3>General Dentistry</h3>
+                        <p>Comprehensive dental exams, cleanings, fillings, and preventive care to maintain your oral health and catch issues early.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">✨</div>
+                    <div class="service-content">
+                        <h3>Teeth Cleaning</h3>
+                        <p>Professional scaling and polishing to remove plaque, tartar, and stains, leaving your teeth sparkling clean and fresh.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🔬</div>
+                    <div class="service-content">
+                        <h3>Root Canal Treatment</h3>
+                        <p>Advanced, pain-free root canal therapy to save damaged teeth and eliminate infection using the latest endodontic techniques.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🏥</div>
+                    <div class="service-content">
+                        <h3>Dental Implants</h3>
+                        <p>Permanent tooth replacement solutions with titanium implants that look, feel, and function just like your natural teeth.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">💎</div>
+                    <div class="service-content">
+                        <h3>Teeth Whitening</h3>
+                        <p>Professional whitening treatments to brighten your smile by several shades, safely and effectively in just one visit.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">😁</div>
+                    <div class="service-content">
+                        <h3>Braces &amp; Aligners</h3>
+                        <p>Traditional braces and modern clear aligners to straighten your teeth and correct bite issues for a perfect, aligned smile.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🎨</div>
+                    <div class="service-content">
+                        <h3>Smile Designing</h3>
+                        <p>Custom smile makeovers combining veneers, bonding, and contouring to create the smile you have always dreamed of.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">👶</div>
+                    <div class="service-content">
+                        <h3>Pediatric Dentistry</h3>
+                        <p>Gentle, kid-friendly dental care including check-ups, fluoride treatments, sealants, and education for your little ones.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon">🚑</div>
+                    <div class="service-content">
+                        <h3>Emergency Dental Care</h3>
+                        <p>Immediate care for dental emergencies including severe toothaches, broken teeth, knocked-out teeth, and infections.</p>
+                    </div>
+                    <div class="service-hover-content">
+                        <span>Available 24/7</span>
+                        <a href="#appointments" class="service-cta">Book Now →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== APPOINTMENT SECTION ========== -->
+    <section class="section appointment-section" id="appointments">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Book Now</span>
+                <h2 class="section-title">Schedule Your <span class="gradient-text">Appointment</span></h2>
+                <p class="section-subtitle">Take the first step towards a healthier smile. Book your consultation with {{ doctor_name }} today.</p>
+            </div>
+            <div class="appointment-wrapper reveal">
+                <div class="appointment-info">
+                    <h3>Why Choose Us?</h3>
+                    <div class="appointment-feature">
+                        <span class="af-icon">⚡</span>
+                        <div>
+                            <h4>Quick Appointments</h4>
+                            <p>Get seen within 24-48 hours of booking</p>
+                        </div>
+                    </div>
+                    <div class="appointment-feature">
+                        <span class="af-icon">💰</span>
+                        <div>
+                            <h4>Affordable Care</h4>
+                            <p>Quality dental care at competitive prices</p>
+                        </div>
+                    </div>
+                    <div class="appointment-feature">
+                        <span class="af-icon">🛡️</span>
+                        <div>
+                            <h4>Safe &amp; Sterile</h4>
+                            <p>100% sterilized equipment and environment</p>
+                        </div>
+                    </div>
+                    <div class="appointment-feature">
+                        <span class="af-icon">😊</span>
+                        <div>
+                            <h4>Pain-Free Options</h4>
+                            <p>Modern techniques for comfortable treatment</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="appointment-form" id="appointment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="apt-name">Full Name *</label>
+                            <input type="text" id="apt-name" name="name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apt-phone">Phone Number *</label>
+                            <input type="tel" id="apt-phone" name="phone" placeholder="Enter phone number" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="apt-email">Email Address *</label>
+                        <input type="email" id="apt-email" name="email" placeholder="Enter your email address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="apt-date">Preferred Date *</label>
+                            <input type="date" id="apt-date" name="preferred_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apt-time">Preferred Time *</label>
+                            <select id="apt-time" name="preferred_time" required>
+                                <option value="">Select time</option>
+                                <option value="09:00 AM">09:00 AM</option>
+                                <option value="09:30 AM">09:30 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="10:30 AM">10:30 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="11:30 AM">11:30 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="02:00 PM">02:00 PM</option>
+                                <option value="02:30 PM">02:30 PM</option>
+                                <option value="03:00 PM">03:00 PM</option>
+                                <option value="03:30 PM">03:30 PM</option>
+                                <option value="04:00 PM">04:00 PM</option>
+                                <option value="04:30 PM">04:30 PM</option>
+                                <option value="05:00 PM">05:00 PM</option>
+                                <option value="05:30 PM">05:30 PM</option>
+                                <option value="06:00 PM">06:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="apt-service">Service Required *</label>
+                        <select id="apt-service" name="service" required>
+                            <option value="">Select a service</option>
+                            <option value="General Dentistry">General Dentistry</option>
+                            <option value="Teeth Cleaning">Teeth Cleaning</option>
+                            <option value="Root Canal Treatment">Root Canal Treatment</option>
+                            <option value="Dental Implants">Dental Implants</option>
+                            <option value="Teeth Whitening">Teeth Whitening</option>
+                            <option value="Braces & Aligners">Braces &amp; Aligners</option>
+                            <option value="Smile Designing">Smile Designing</option>
+                            <option value="Pediatric Dentistry">Pediatric Dentistry</option>
+                            <option value="Emergency Dental Care">Emergency Dental Care</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="apt-message">Additional Message</label>
+                        <textarea id="apt-message" name="message" placeholder="Tell us about your dental concern..." rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-glow btn-full" id="apt-submit-btn">
+                        <span class="btn-text">Book Appointment</span>
+                        <span class="btn-loader" style="display:none;">
+                            <svg class="spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle></svg>
+                            Processing...
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TESTIMONIALS SECTION ========== -->
+    <section class="section testimonials-section" id="testimonials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Testimonials</span>
+                <h2 class="section-title">What Our <span class="gradient-text">Patients</span> Say</h2>
+                <p class="section-subtitle">Real stories from real patients who experienced the Crown & Craft difference.</p>
+            </div>
+            <div class="testimonials-slider reveal">
+                <div class="testimonials-track" id="testimonials-track">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Dr. Maneesh Reddy Pocharam transformed my smile completely! The smile designing treatment was painless and the results are absolutely stunning. I cannot stop smiling now. Highly recommended!"</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">RP</div>
+                            <div>
+                                <h4>Rajesh Patel</h4>
+                                <span>Smile Designing Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"I was terrified of dentists until I visited Crown & Craft Dental Clinic. Dr. Maneesh Reddy Pocharam was so gentle and patient. My root canal was completely painless! The clinic is wonderful and very modern."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">SK</div>
+                            <div>
+                                <h4>Sneha Krishnan</h4>
+                                <span>Root Canal Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Got my dental implants done here and I am amazed at the quality. Dr. Maneesh Reddy Pocharam explained every step clearly and made me feel at ease. The implants look and feel exactly like natural teeth!"</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">AM</div>
+                            <div>
+                                <h4>Arun Mehta</h4>
+                                <span>Dental Implants Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"My kids love going to Crown & Craft Dental Clinic! Dr. Maneesh Reddy Pocharam is fantastic with children. The entire staff is friendly and the clinic has a welcoming atmosphere. Best pediatric dental care!"</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">PD</div>
+                            <div>
+                                <h4>Priya Desai</h4>
+                                <span>Pediatric Care Parent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Had a dental emergency at midnight and Dr. Maneesh Reddy Pocharam was available immediately. The care I received was exceptional. The teeth whitening I got later was incredible too. Forever grateful!"</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">VR</div>
+                            <div>
+                                <h4>Vikram Rao</h4>
+                                <span>Emergency &amp; Whitening Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-dots" id="testimonial-dots">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                    <span class="dot" data-index="4"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FAQ SECTION ========== -->
+    <section class="section faq-section" id="faq">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">FAQ</span>
+                <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+                <p class="section-subtitle">Find answers to common questions about our dental services and treatments.</p>
+            </div>
+            <div class="faq-container reveal">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How often should I visit the dentist?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We recommend visiting the dentist every 6 months for a routine check-up and professional cleaning. However, if you have specific dental conditions, Dr. Maneesh Reddy Pocharam may suggest more frequent visits tailored to your needs.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is the root canal treatment painful?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Modern root canal treatment is virtually painless. At Crown & Craft Dental Clinic, we use advanced anesthesia techniques and the latest equipment to ensure your comfort throughout the procedure. Most patients report feeling no pain during treatment.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How long do dental implants last?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>With proper care and regular dental check-ups, dental implants can last a lifetime. The implant crown may need replacement after 10-15 years due to normal wear. Dr. Maneesh Reddy Pocharam uses premium-quality implants for maximum durability.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What age should my child first visit the dentist?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The American Dental Association recommends that children visit the dentist by their first birthday or within 6 months of their first tooth erupting. Early visits help establish good oral hygiene habits and allow early detection of potential issues.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How much does teeth whitening cost?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Professional teeth whitening at Crown & Craft Dental Clinic starts from ₹5,000. The exact cost depends on the whitening method and the number of sessions required. We offer both in-office and take-home whitening options for your convenience.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do you offer emergency dental services?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! We understand dental emergencies can happen anytime. Crown & Craft Dental Clinic provides emergency dental services for issues like severe toothaches, broken or knocked-out teeth, and dental infections. Contact us immediately for urgent care.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What payment methods do you accept?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We accept cash, credit/debit cards, UPI, net banking, and major health insurance plans. We also offer EMI options for expensive treatments. Our goal is to make quality dental care accessible and affordable for everyone.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How long does the Braces/Aligners treatment take?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The duration of orthodontic treatment varies depending on the complexity of your case. Traditional braces typically take 12-24 months, while clear aligners may take 6-18 months. Dr. Maneesh Reddy Pocharam will provide a personalized treatment timeline during your consultation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CONTACT SECTION ========== -->
+    <section class="section contact-section" id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Contact Us</span>
+                <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
+                <p class="section-subtitle">Have questions? We would love to hear from you. Reach out to us anytime!</p>
+            </div>
+            <div class="contact-info-cards reveal">
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">📍</div>
+                    <h4>Visit Us</h4>
+                    <p>123 Dental Avenue, Banjara Hills<br>Hyderabad, Telangana 500034</p>
+                </div>
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">📞</div>
+                    <h4>Call Us</h4>
+                    <p>+91 99493 35358<br>+91 93981 61844</p>
+                </div>
+                <div class="contact-info-card">
+                    <div class="contact-info-icon">✉️</div>
+                    <h4>Email Us</h4>
+                    <p>info@crownandcraftdental.com<br>appointments@crownandcraftdental.com</p>
+                </div>
+            </div>
+            <div class="contact-grid reveal">
+                <div class="contact-form-wrapper">
+                    <h3>Send Us a Message</h3>
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-group">
+                            <label for="contact-name">Full Name *</label>
+                            <input type="text" id="contact-name" name="name" placeholder="Your full name" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-email">Email *</label>
+                                <input type="email" id="contact-email" name="email" placeholder="Your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-phone">Phone</label>
+                                <input type="tel" id="contact-phone" name="phone" placeholder="Your phone number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">Message *</label>
+                            <textarea id="contact-message" name="message" placeholder="Write your message here..." rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-glow btn-full" id="contact-submit-btn">
+                            <span class="btn-text">Send Message</span>
+                            <span class="btn-loader" style="display:none;">
+                                <svg class="spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle></svg>
+                                Sending...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+                <div class="contact-map">
+                    <h3>Find Us On Map</h3>
+                    <div class="map-placeholder">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.7!2d78.44!3d17.41!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDI0JzM2LjAiTiA3OMKwMjYnMjQuMCJF!5e0!3m2!1sen!2sin!4v1" width="100%" height="350" style="border:0; border-radius: 16px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="clinic-hours">
+                        <h4>🕐 Clinic Hours</h4>
+                        <div class="hours-grid">
+                            <span>Monday - Friday</span><span>9:00 AM - 7:00 PM</span>
+                            <span>Saturday</span><span>9:00 AM - 5:00 PM</span>
+                            <span>Sunday</span><span>10:00 AM - 2:00 PM</span>
+                            <span>Emergency</span><span>Available 24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="footer-wave">
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                <path d="M0,40 C150,80 350,0 500,40 C650,80 800,20 1000,50 C1200,80 1350,20 1440,40 L1440,100 L0,100 Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="footer-content">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <div class="footer-logo">
+                            <span class="logo-icon">🦷</span>
+                            <span class="logo-text">Crown <span class="logo-highlight">& Craft</span></span>
+                        </div>
+                        <p>{{ clinic_name }} is dedicated to providing world-class dental care with a personal touch. Your smile is our masterpiece.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link" title="Facebook">📘</a>
+                            <a href="#" class="social-link" title="Instagram">📸</a>
+                            <a href="#" class="social-link" title="Twitter">🐦</a>
+                            <a href="#" class="social-link" title="YouTube">🎥</a>
+                        </div>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#appointments">Book Appointment</a></li>
+                            <li><a href="#testimonials">Testimonials</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Our Services</h4>
+                        <ul>
+                            <li><a href="#services">General Dentistry</a></li>
+                            <li><a href="#services">Teeth Cleaning</a></li>
+                            <li><a href="#services">Root Canal</a></li>
+                            <li><a href="#services">Dental Implants</a></li>
+                            <li><a href="#services">Teeth Whitening</a></li>
+                            <li><a href="#services">Smile Designing</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Contact Info</h4>
+                        <ul class="footer-contact">
+                            <li>📍 123 Dental Avenue, Banjara Hills, Hyderabad</li>
+                            <li>📞 +91 99493 35358</li>
+                            <li>✉️ info@crownandcraftdental.com</li>
+                            <li>🕐 Mon-Sat: 9AM - 7PM</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 {{ clinic_name }}. All rights reserved. | Designed with ❤️ for better smiles.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========== TOAST NOTIFICATION ========== -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

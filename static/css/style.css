@@ -165,9 +165,24 @@ ul { list-style: none; }
 
 /* Scroll Indicator */
 .scroll-indicator {
-    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    color: var(--text-dark); font-size: 0.75rem; animation: fadeInUp 1s ease 2s both;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    left: auto;
+    transform: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-dark);
+    font-size: 0.7rem;
+    opacity: 0.7;
+    animation: fadeInUp 1s ease 2s both;
+}
+
+@media (max-width: 768px) {
+    .scroll-indicator { display: none; }
 }
 .scroll-mouse { width: 26px; height: 40px; border: 2px solid var(--dark-3); border-radius: 20px; position: relative; }
 .scroll-wheel {
@@ -176,7 +191,10 @@ ul { list-style: none; }
     animation: scrollWheel 2s ease-in-out infinite;
 }
 @keyframes scrollWheel { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(16px); } }
-@keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); } 
+    to   { opacity: 1; transform: translateY(0); } 
+}
 
 /* ====== SECTION COMMON ====== */
 .section { padding: 100px 0; position: relative; }

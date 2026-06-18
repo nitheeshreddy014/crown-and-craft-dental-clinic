@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Login | Crown &amp; Craft Dental Clinic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);font-family:'Inter',sans-serif;overflow-x:hidden;position:relative}
+.bg-el{position:fixed;inset:0;pointer-events:none;z-index:0}
+.bf{position:absolute;font-size:2rem;opacity:.12;animation:bfl 8s ease-in-out infinite}
+.bf:nth-child(1){top:8%;left:8%}.bf:nth-child(2){top:18%;right:12%;animation-delay:1.5s;font-size:2.5rem}
+.bf:nth-child(3){bottom:22%;left:15%;animation-delay:3s}.bf:nth-child(4){bottom:12%;right:8%;animation-delay:4.5s}
+.bf:nth-child(5){top:50%;left:4%;animation-delay:2s;font-size:2.8rem}.bf:nth-child(6){top:35%;right:5%;animation-delay:5s}
+@keyframes bfl{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-20px) rotate(5deg)}50%{transform:translateY(-10px) rotate(-3deg)}75%{transform:translateY(-25px) rotate(3deg)}}
+.ctr{position:relative;z-index:10;width:100%;max-width:480px;padding:20px;animation:ce .8s cubic-bezier(.16,1,.3,1) forwards;opacity:0;transform:translateY(40px) scale(.95)}
+@keyframes ce{to{opacity:1;transform:translateY(0) scale(1)}}
+.card{background:rgba(255,255,255,.05);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:24px;border:1px solid rgba(255,255,255,.1);padding:40px 36px;box-shadow:0 25px 60px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(14,165,233,.05),transparent,rgba(139,92,246,.05),transparent);animation:cg 6s linear infinite;z-index:-1}
+@keyframes cg{to{transform:rotate(360deg)}}
+.logo{text-align:center;margin-bottom:6px}.logo-i{font-size:2.5rem;display:block;animation:tb 2s ease-in-out infinite}
+@keyframes tb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.logo-t{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff}
+.logo-h{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tab-bar{display:flex;position:relative;margin:20px 0 24px;border-bottom:2px solid rgba(255,255,255,.06)}
+.tab-btn{flex:1;padding:12px 0;background:none;border:none;color:rgba(255,255,255,.4);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:color .3s}
+.tab-btn.active{color:#fff}
+.tab-ind{position:absolute;bottom:-2px;left:0;width:50%;height:2px;background:linear-gradient(90deg,#0ea5e9,#8b5cf6);border-radius:2px;transition:left .35s cubic-bezier(.16,1,.3,1)}
+.tp{display:none}.tp.active{display:block;animation:fi .4s ease}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tp h2{text-align:center;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:4px}
+.tp .sub{text-align:center;color:rgba(255,255,255,.4);font-size:.84rem;margin-bottom:20px}
+.mb{padding:11px 14px;border-radius:10px;font-size:.83rem;margin-bottom:14px;display:none;text-align:center}
+.mb.show{display:block;animation:mf .3s ease}
+.me{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.me.show{animation:mf .3s ease,shk .4s ease}
+.ms{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80}
+@keyframes mf{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.fg{margin-bottom:16px}.fg label{display:block;font-size:.8rem;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:6px;letter-spacing:.3px}
+.iw{position:relative;display:flex;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;transition:all .3s;overflow:hidden}
+.iw:focus-within{border-color:#0ea5e9;background:rgba(14,165,233,.06);box-shadow:0 0 0 3px rgba(14,165,233,.12)}
+.ii{padding:0 0 0 14px;font-size:1rem;opacity:.4;flex-shrink:0;user-select:none;transition:opacity .3s}
+.iw:focus-within .ii{opacity:.8}
+.iw input{flex:1;padding:12px;background:transparent;border:none;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;width:100%}
+.iw input::placeholder{color:rgba(255,255,255,.25)}
+.tpw{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:0 14px;font-size:1.1rem;transition:color .3s;flex-shrink:0}
+.tpw:hover{color:rgba(255,255,255,.7)}
+.fo{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.rm{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.8rem;color:rgba(255,255,255,.45)}
+.rm input{display:none}
+.cc{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
+.cc::after{content:'';display:none;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-1px)}
+.rm input:checked+.cc{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border-color:transparent}
+.rm input:checked+.cc::after{display:block}
+.fl{font-size:.8rem;color:#0ea5e9;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;transition:color .3s}
+.fl:hover{color:#38bdf8;text-decoration:underline}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:12px;color:#fff;font-size:.93rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#8b5cf6,#0ea5e9);opacity:0;transition:opacity .3s}
+.btn:hover::before{opacity:1}.btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,233,.4)}
+.btn:disabled{opacity:.7;cursor:not-allowed;transform:none}
+.btn span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn .bl{display:none}.btn.ld .bt{display:none}.btn.ld .bl{display:flex;align-items:center;gap:8px}
+.dv{display:flex;align-items:center;gap:14px;margin:22px 0}
+.dv::before,.dv::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+.dv span{font-size:.75rem;color:rgba(255,255,255,.3);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+.sb{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.sbt{width:100%;padding:11px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:10px;position:relative}
+.sbt:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.85)}
+.sbt .si{font-size:1.2rem}
+.sbt .bs{position:absolute;top:-6px;right:-6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.5px}
+.ah{text-align:center;font-size:.76rem;color:rgba(255,255,255,.28);margin-bottom:6px;padding:8px 0}
+.sw{text-align:center;font-size:.84rem;color:rgba(255,255,255,.4);margin-top:16px}
+.sw a{color:#0ea5e9;cursor:pointer;text-decoration:none;font-weight:600;transition:color .3s}
+.sw a:hover{color:#38bdf8;text-decoration:underline}
+.str-bar{height:4px;background:rgba(255,255,255,.08);border-radius:4px;margin-top:8px;overflow:hidden}
+.str-fill{height:100%;width:0;border-radius:4px;transition:width .3s,background .3s}
+.str-lbl{font-size:.7rem;float:right;margin-top:4px;color:rgba(255,255,255,.35)}
+.terms{display:flex;align-items:flex-start;gap:8px;margin-bottom:20px}
+.terms input{display:none}
+.terms label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4}
+.terms a{color:#0ea5e9;text-decoration:none}.terms a:hover{text-decoration:underline}
+.sn{text-align:center;font-size:.76rem;color:rgba(255,255,255,.28);padding:14px 0 0;border-top:1px solid rgba(255,255,255,.05);margin-top:8px}
+.bl-link{display:block;text-align:center;margin-top:18px;color:rgba(255,255,255,.3);text-decoration:none;font-size:.84rem;transition:all .3s}
+.bl-link:hover{color:#0ea5e9;transform:translateX(-4px)}
+.lf{text-align:center;margin-top:10px}.lf p{font-size:.7rem;color:rgba(255,255,255,.18)}
+.lf a{color:rgba(255,255,255,.25);transition:color .3s;text-decoration:none}.lf a:hover{color:#0ea5e9}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:20px}
+.mo.show{display:flex;animation:mofi .3s ease}
+@keyframes mofi{from{opacity:0}to{opacity:1}}
+.mc{background:rgba(30,41,59,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:400px;width:100%;position:relative;animation:mcsu .4s cubic-bezier(.16,1,.3,1);box-shadow:0 25px 60px rgba(0,0,0,.5)}
+@keyframes mcsu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.mx{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);cursor:pointer;font-size:1rem;transition:all .2s}
+.mx:hover{background:rgba(239,68,68,.15);color:#f87171}
+.mi{text-align:center;font-size:2.2rem;margin-bottom:12px}
+.mt{text-align:center;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px}
+.mtx{text-align:center;font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:20px}
+.mci{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+.mci-i{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:.85rem}
+.mci-i:not(:last-child){border-bottom:1px solid rgba(255,255,255,.05)}
+.mci-i .ic{font-size:1.1rem;width:22px;text-align:center}
+.mci-i .lb{color:rgba(255,255,255,.35);font-size:.75rem}
+.mci-i .vl{color:#fff;font-weight:500}
+.mb-btn{width:100%;padding:12px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-top:18px;transition:all .3s}
+.mb-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,165,233,.35)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(30,41,59,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 24px;font-size:.84rem;color:rgba(255,255,255,.8);z-index:200;opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1);box-shadow:0 10px 40px rgba(0,0,0,.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:480px){.card{padding:28px 20px}.fo{flex-direction:column;gap:10px;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="bg-el"><div class="bf">&#129463;</div><div class="bf">&#10024;</div><div class="bf">&#128513;</div><div class="bf">&#128142;</div><div class="bf">&#129463;</div><div class="bf">&#11088;</div></div>
+
+<!-- Forgot Password Modal -->
+<div class="mo" id="fmod">
+<div class="mc">
+<button class="mx" id="fmx">&#10005;</button>
+<div class="mi">&#128273;</div>
+<h3 class="mt">Forgot Your Password?</h3>
+<p class="mtx">Contact the system administrator to reset your password.</p>
+<div class="mci">
+<div class="mci-i"><span class="ic">&#9993;&#65039;</span><div><div class="lb">Email</div><div class="vl">admin@crownandcraftdental.com</div></div></div>
+<div class="mci-i"><span class="ic">&#128222;</span><div><div class="lb">Phone</div><div class="vl">+91 99493 35358</div></div></div>
+<div class="mci-i"><span class="ic">&#128336;</span><div><div class="lb">Available</div><div class="vl">Mon-Sat, 9 AM - 7 PM</div></div></div>
+</div>
+<button class="mb-btn" id="fmok">Got it, Thanks!</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="ctr">
+<div class="card">
+<!-- Logo -->
+<div class="logo"><span class="logo-i">&#129463;</span><span class="logo-t">Crown <span class="logo-h">&amp;Craft</span></span></div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+<button class="tab-btn active" data-tab="signin">Sign In</button>
+<button class="tab-btn" data-tab="signup">Sign Up</button>
+<div class="tab-ind" id="tab-ind"></div>
+</div>
+
+<!-- ==================== SIGN IN PANEL ==================== -->
+<div class="tp active" id="panel-signin">
+<h2>Welcome Back</h2>
+<p class="sub">Sign in to your account</p>
+<div class="mb me" id="si-err"></div>
+<div class="mb ms" id="si-ok">&#9989; Login successful! Redirecting...</div>
+<form id="si-form">
+<div class="fg"><label>Email or Username</label>
+<div class="iw"><span class="ii">&#128100;</span><input type="text" id="si-email" placeholder="Enter email or admin username" required autocomplete="username"></div></div>
+<div class="fg"><label>Password</label>
+<div class="iw"><span class="ii">&#128274;</span><input type="password" id="si-pw" placeholder="Enter your password" required autocomplete="current-password"><button type="button" class="tpw" data-target="si-pw">&#128065;&#65039;</button></div></div>
+<div class="fo">
+<label class="rm"><input type="checkbox" id="si-rem"><span class="cc"></span>Remember me</label>
+<button type="button" class="fl" id="forgot-btn">Forgot Password?</button>
+</div>
+<button type="submit" class="btn" id="si-btn"><span class="bt">&#128274; Sign In</span><span class="bl"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/></circle></svg> Signing in...</span></button>
+</form>
+<div class="dv"><span>or continue with</span></div>
+<div class="sb">
+<button class="sbt" id="btn-g" type="button"><span class="si">&#127760;</span>Sign in with Google<span class="bs">Soon</span></button>
+<button class="sbt" id="btn-ms" type="button"><span class="si">&#128187;</span>Sign in with Microsoft<span class="bs">Soon</span></button>
+</div>
+<div class="ah">&#128273; Admin? Use your admin credentials for dashboard access</div>
+<div class="sw">Don't have an account? <a href="#" id="to-su">Sign Up</a></div>
+</div>
+
+<!-- ==================== SIGN UP PANEL ==================== -->
+<div class="tp" id="panel-signup">
+<h2>Create Account</h2>
+<p class="sub">Join Crown &amp; Craft Dental Clinic</p>
+<div class="mb me" id="su-err"></div>
+<div class="mb ms" id="su-ok"></div>
+<form id="su-form">
+<div class="fg"><label>Full Name</label>
+<div class="iw"><span class="ii">&#128100;</span><input type="text" id="su-name" placeholder="Enter your full name" required></div></div>
+<div class="fg"><label>Email Address</label>
+<div class="iw"><span class="ii">&#9993;&#65039;</span><input type="email" id="su-email" placeholder="Enter your email" required></div></div>
+<div class="fg"><label>Phone Number <span style="opacity:.5">(Optional)</span></label>
+<div class="iw"><span class="ii">&#128222;</span><input type="tel" id="su-phone" placeholder="+91 99493 35358"></div></div>
+<div class="fg"><label>Password</label>
+<div class="iw"><span class="ii">&#128274;</span><input type="password" id="su-pw" placeholder="Min 6 characters" required><button type="button" class="tpw" data-target="su-pw">&#128065;&#65039;</button></div>
+<div class="str-bar"><div class="str-fill" id="str-fill"></div></div>
+<span class="str-lbl" id="str-lbl"></span>
+</div>
+<div class="fg"><label>Confirm Password</label>
+<div class="iw"><span class="ii">&#128274;</span><input type="password" id="su-cpw" placeholder="Re-enter password" required></div></div>
+<div class="terms"><label><input type="checkbox" id="su-terms"><span class="cc"></span>I agree to the <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a></label></div>
+<button type="submit" class="btn" id="su-btn"><span class="bt">&#128100; Create Account</span><span class="bl"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/></circle></svg> Creating account...</span></button>
+</form>
+<div class="sw">Already have an account? <a href="#" id="to-si">Sign In</a></div>
+</div>
+
+<div class="sn">&#128737;&#65039; Authorized clinic staff &amp; registered patients only</div>
+</div>
+<a href="/" class="bl-link">&#8592; Back to Website</a>
+<div class="lf"><p>&copy; 2024 Crown &amp; Craft Dental Clinic &nbsp;|&nbsp; <a href="#">Privacy Policy</a> &nbsp;|&nbsp; <a href="#">Terms of Service</a></p></div>
+</div>
+
+<script>
+// ==================== TAB SWITCHING ====================
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabInd = document.getElementById('tab-ind');
+const panels = document.querySelectorAll('.tp');
+
+function switchTab(name) {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    tabInd.style.left = name === 'signin' ? '0%' : '50%';
+    panels.forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    // Clear messages
+    document.querySelectorAll('.mb').forEach(m => m.classList.remove('show'));
+}
+
+tabBtns.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+document.getElementById('to-su').addEventListener('click', e => { e.preventDefault(); switchTab('signup'); });
+document.getElementById('to-si').addEventListener('click', e => { e.preventDefault(); switchTab('signin'); });
+
+// ==================== PASSWORD TOGGLE ====================
+document.querySelectorAll('.tpw').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const inp = document.getElementById(btn.dataset.target);
+        const vis = inp.type === 'text';
+        inp.type = vis ? 'password' : 'text';
+        btn.innerHTML = vis ? '&#128065;&#65039;' : '&#128584;';
+    });
+});
+
+// ==================== PASSWORD STRENGTH ====================
+const suPw = document.getElementById('su-pw');
+const strFill = document.getElementById('str-fill');
+const strLbl = document.getElementById('str-lbl');
+
+suPw.addEventListener('input', () => {
+    const v = suPw.value;
+    let score = 0;
+    if (v.length >= 6) score += 25;
+    if (v.length >= 10) score += 25;
+    if (/[A-Z]/.test(v)) score += 25;
+    if (/[0-9!@#$%^&*]/.test(v)) score += 25;
+
+    strFill.style.width = score + '%';
+    if (score <= 25) { strFill.style.background = '#ef4444'; strLbl.textContent = 'Weak'; strLbl.style.color = '#ef4444'; }
+    else if (score <= 50) { strFill.style.background = '#f97316'; strLbl.textContent = 'Fair'; strLbl.style.color = '#f97316'; }
+    else if (score <= 75) { strFill.style.background = '#eab308'; strLbl.textContent = 'Good'; strLbl.style.color = '#eab308'; }
+    else { strFill.style.background = '#22c55e'; strLbl.textContent = 'Strong'; strLbl.style.color = '#22c55e'; }
+    if (!v) { strFill.style.width = '0'; strLbl.textContent = ''; }
+});
+
+// ==================== SIGN IN ====================
+document.getElementById('si-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const errDiv = document.getElementById('si-err');
+    const okDiv = document.getElementById('si-ok');
+    const btn = document.getElementById('si-btn');
+    const email = document.getElementById('si-email').value.trim();
+    const pw = document.getElementById('si-pw').value;
+
+    errDiv.classList.remove('show'); okDiv.classList.remove('show');
+    if (!email) { errDiv.textContent = 'Please enter your email or username.'; errDiv.classList.add('show'); return; }
+    if (!pw) { errDiv.textContent = 'Please enter your password.'; errDiv.classList.add('show'); return; }
+
+    btn.classList.add('ld'); btn.disabled = true;
+    try {
+        const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: email, password: pw}) });
+        const data = await res.json();
+        if (data.success) {
+            okDiv.textContent = '\u2705 ' + data.message;
+            okDiv.classList.add('show');
+            setTimeout(() => { window.location.href = data.redirect_url || '/'; }, 1200);
+        } else {
+            errDiv.textContent = data.message || 'Invalid credentials.';
+            errDiv.classList.add('show');
+            btn.classList.remove('ld'); btn.disabled = false;
+        }
+    } catch (err) {
+        errDiv.textContent = 'Connection error. Please try again.';
+        errDiv.classList.add('show');
+        btn.classList.remove('ld'); btn.disabled = false;
+    }
+});
+
+// ==================== SIGN UP ====================
+document.getElementById('su-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const errDiv = document.getElementById('su-err');
+    const okDiv = document.getElementById('su-ok');
+    const btn = document.getElementById('su-btn');
+    const name = document.getElementById('su-name').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const phone = document.getElementById('su-phone').value.trim();
+    const pw = document.getElementById('su-pw').value;
+    const cpw = document.getElementById('su-cpw').value;
+    const terms = document.getElementById('su-terms').checked;
+
+    errDiv.classList.remove('show'); okDiv.classList.remove('show');
+    if (!name || name.length < 2) { errDiv.textContent = 'Name must be at least 2 characters.'; errDiv.classList.add('show'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errDiv.textContent = 'Please enter a valid email.'; errDiv.classList.add('show'); return; }
+    if (pw.length < 6) { errDiv.textContent = 'Password must be at least 6 characters.'; errDiv.classList.add('show'); return; }
+    if (pw !== cpw) { errDiv.textContent = 'Passwords do not match.'; errDiv.classList.add('show'); return; }
+    if (!terms) { errDiv.textContent = 'Please agree to the Terms of Service & Privacy Policy.'; errDiv.classList.add('show'); return; }
+
+    btn.classList.add('ld'); btn.disabled = true;
+    try {
+        const res = await fetch('/api/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name, email, phone, password: pw, confirm_password: cpw}) });
+        const data = await res.json();
+        if (data.success) {
+            okDiv.textContent = '\u2705 ' + data.message;
+            okDiv.classList.add('show');
+            document.getElementById('su-form').reset();
+            strFill.style.width = '0'; strLbl.textContent = '';
+            setTimeout(() => switchTab('signin'), 1500);
+        } else {
+            errDiv.textContent = data.message;
+            errDiv.classList.add('show');
+        }
+        btn.classList.remove('ld'); btn.disabled = false;
+    } catch (err) {
+        errDiv.textContent = 'Connection error. Please try again.';
+        errDiv.classList.add('show');
+        btn.classList.remove('ld'); btn.disabled = false;
+    }
+});
+
+// ==================== SOCIAL BUTTONS ====================
+document.getElementById('btn-g').addEventListener('click', () => showToast('\ud83d\udea7 Google Sign-In \u2014 Coming Soon!'));
+document.getElementById('btn-ms').addEventListener('click', () => showToast('\ud83d\udea7 Microsoft Sign-In \u2014 Coming Soon!'));
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ==================== FORGOT PASSWORD MODAL ====================
+document.getElementById('forgot-btn').addEventListener('click', () => document.getElementById('fmod').classList.add('show'));
+document.getElementById('fmx').addEventListener('click', () => document.getElementById('fmod').classList.remove('show'));
+document.getElementById('fmok').addEventListener('click', () => document.getElementById('fmod').classList.remove('show'));
+document.getElementById('fmod').addEventListener('click', e => { if (e.target.id === 'fmod') e.target.classList.remove('show'); });
+</script>
+</body>
+</html>

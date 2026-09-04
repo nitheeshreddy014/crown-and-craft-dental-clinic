@@ -1,4 +1,5 @@
 import os, hashlib, hmac, re
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -13,9 +14,20 @@ from models import AppointmentForm, ContactForm, LoginForm
 CLINIC_NAME = "Crown & Craft Dental Clinic"
 DOCTOR_NAME = "Dr. Maneesh Reddy Pocharam"
 
-app = FastAPI(title=CLINIC_NAME, version="1.0.0")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()          # initialise DB on every cold start
+    yield
+
+app = FastAPI(title=CLINIC_NAME, version="1.0.0", lifespan=lifespan)
+
+# Mount static files only when the directory actually exists (safe for Vercel)
+_static_dir = os.path.join(BASE_DIR, "static")
+if os.path.isdir(_static_dir):
+    app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 SECRET_KEY = os.getenv("SECRET_KEY", "crown-craft-secret-key-change-in-production")
@@ -32,9 +44,7 @@ def _verify_pw(plain, hashed):
 
 ADMIN_PASSWORD_HASH = _hash_pw(ADMIN_PASSWORD)
 
-@app.on_event("startup")
-async def startup_event():
-    init_db()
+# startup is now handled by the lifespan context manager above
 
 def create_token(username, role="admin"):
     expire = datetime.utcnow() + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)

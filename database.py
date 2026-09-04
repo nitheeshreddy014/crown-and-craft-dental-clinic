@@ -1,18 +1,15 @@
-import os, json, sqlite3, urllib.request, urllib.error
+import os, json, urllib.request, urllib.error
 
 # ── Turso (persistent, free 9 GB) via pure-Python HTTP API ───────────────────
 # No compiled/binary packages needed — works on any serverless platform.
 # Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in Vercel Environment Variables.
 _TURSO_URL   = os.environ.get("TURSO_DATABASE_URL", "")
 _TURSO_TOKEN = os.environ.get("TURSO_AUTH_TOKEN", "")
-_USE_TURSO   = bool(_TURSO_URL and _TURSO_TOKEN)
 # Convert  libsql://xxx.turso.io  →  https://xxx.turso.io/v2/pipeline
-_TURSO_HTTP  = (_TURSO_URL.replace("libsql://", "https://") + "/v2/pipeline") if _USE_TURSO else ""
+_TURSO_HTTP  = _TURSO_URL.replace("libsql://", "https://") + "/v2/pipeline" if _TURSO_URL else ""
 
-# ── Local SQLite fallback (dev / Turso vars not set) ─────────────────────────
-_IS_VERCEL = bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
-DB_DIR  = "/tmp/clinic_data" if _IS_VERCEL else os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-DB_PATH = os.path.join(DB_DIR, "clinic.db")
+if not _TURSO_URL or not _TURSO_TOKEN:
+    raise RuntimeError("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN must be set in environment variables.")
 
 
 # ── Turso HTTP layer ──────────────────────────────────────────────────────────
@@ -67,27 +64,11 @@ def _turso_run(sql, params=None):
             "rowcount":  res.get("affected_row_count", 0)}
 
 
-# ── SQLite layer (local dev fallback) ─────────────────────────────────────────
-
-def _sqlite_run(sql, params=None):
-    """Execute one SQL statement on local SQLite. Same result dict shape."""
-    os.makedirs(DB_DIR, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    c    = conn.execute(sql, params or [])
-    rows = [dict(r) for r in (c.fetchall() or [])]
-    conn.commit()
-    res  = {"rows": rows, "lastrowid": c.lastrowid, "rowcount": c.rowcount}
-    conn.close()
-    return res
-
-
 # ── Unified runner ────────────────────────────────────────────────────────────
 
 def _run(sql, params=None):
-    """Single entry point: Turso when env vars present, else local SQLite."""
-    return _turso_run(sql, params) if _USE_TURSO else _sqlite_run(sql, params)
+    """Single entry point: always uses Turso."""
+    return _turso_run(sql, params)
 
 
 # ── Schema ────────────────────────────────────────────────────────────────────

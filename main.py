@@ -184,31 +184,76 @@ async def google_login(request: Request):
 
 @app.get("/auth/google/callback")
 async def google_callback(request: Request, code: str = None, state: str = None, error: str = None):
+    # Step 1 — cancelled or missing code
     if error or not code:
         return RedirectResponse(url="/login?error=google_cancelled")
-    import httpx
-    async with httpx.AsyncClient() as client:
-        token_r = await client.post("https://oauth2.googleapis.com/token", data={
-            "client_id": GOOGLE_CLIENT_ID, "client_secret": GOOGLE_CLIENT_SECRET,
-            "code": code, "redirect_uri": GOOGLE_REDIRECT_URI, "grant_type": "authorization_code"
-        })
-        td = token_r.json()
-        if "error" in td:
-            return RedirectResponse(url="/login?error=google_failed")
-        info_r = await client.get("https://www.googleapis.com/oauth2/v3/userinfo",
-            headers={"Authorization": f"Bearer {td['access_token']}"})
-        info = info_r.json()
-    email = info.get("email", "").lower()
-    name  = info.get("name", email.split("@")[0])
-    if not email:
-        return RedirectResponse(url="/login?error=google_no_email")
-    if not check_email_exists(email):
-        create_user(name=name, email=email, phone="", password_hash=_hash_pw(secrets.token_urlsafe(32)))
-    user  = get_user_by_email(email)
-    token = create_token(email, "patient", user["name"] if user else name)
-    resp  = RedirectResponse(url="/my-appointments", status_code=302)
-    resp.set_cookie("admin_token", token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS*3600, samesite="lax")
-    return resp
+
+    # Step 2 — verify state cookie to prevent CSRF
+    stored_state = request.cookies.get("oauth_state")
+    if not stored_state or stored_state != state:
+        return RedirectResponse(url="/login?error=invalid_state")
+
+    try:
+        import httpx
+        # Step 3 — exchange code for access token (8s timeout)
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            token_r = await client.post(
+                "https://oauth2.googleapis.com/token",
+                data={
+                    "client_id":     GOOGLE_CLIENT_ID,
+                    "client_secret": GOOGLE_CLIENT_SECRET,
+                    "code":          code,
+                    "redirect_uri":  GOOGLE_REDIRECT_URI,
+                    "grant_type":    "authorization_code",
+                }
+            )
+            td = token_r.json()
+
+            # Step 4 — check Google returned a valid token
+            if "error" in td or "access_token" not in td:
+                return RedirectResponse(url="/login?error=google_token_failed")
+
+            # Step 5 — fetch user profile from Google
+            info_r = await client.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={"Authorization": f"Bearer {td['access_token']}"}
+            )
+            info = info_r.json()
+
+        # Step 6 — extract email & name
+        email = info.get("email", "").lower().strip()
+        name  = info.get("name", "").strip() or email.split("@")[0]
+
+        if not email:
+            return RedirectResponse(url="/login?error=google_no_email")
+
+        # Step 7 — create user only if new, else use existing account
+        if not check_email_exists(email):
+            create_user(
+                name=name, email=email, phone="",
+                password_hash=_hash_pw(secrets.token_urlsafe(32))
+            )
+
+        user  = get_user_by_email(email)
+        display_name = user["name"] if user else name
+
+        # Step 8 — issue session token and redirect
+        token = create_token(email, "patient", display_name)
+        resp  = RedirectResponse(url="/my-appointments", status_code=302)
+        resp.set_cookie(
+            "admin_token", token,
+            httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600, samesite="lax"
+        )
+        # Clear the oauth state cookie
+        resp.delete_cookie("oauth_state")
+        return resp
+
+    except httpx.TimeoutException:
+        return RedirectResponse(url="/login?error=google_timeout")
+    except httpx.RequestError:
+        return RedirectResponse(url="/login?error=google_network_error")
+    except Exception:
+        return RedirectResponse(url="/login?error=google_server_error")
 
 
 @app.post("/api/appointments")

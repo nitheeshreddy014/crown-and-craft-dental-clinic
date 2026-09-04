@@ -176,3 +176,11 @@ def get_user_by_email(email):
 
 def check_email_exists(email):
     return len(_run("SELECT 1 FROM users WHERE email = ?", (email.lower(),))["rows"]) > 0
+
+
+def get_appointments_by_email(email):
+    """Get all appointments for a specific patient email."""
+    return _run(
+        "SELECT * FROM appointments WHERE email = ? ORDER BY created_at DESC",
+        (email.lower(),)
+    )["rows"]

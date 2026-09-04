@@ -191,6 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         appointmentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            // ── Require login before booking ──
+            try {
+                const meRes  = await fetch('/api/me');
+                const meData = await meRes.json();
+                if (!meData.logged_in) {
+                    showToast('Please login or register to book an appointment.', 'error');
+                    setTimeout(() => { window.location.href = '/login?next=appointments'; }, 1800);
+                    return;
+                }
+            } catch(err) {
+                showToast('Could not verify login. Please try again.', 'error'); return;
+            }
             const submitBtn = document.getElementById('apt-submit-btn');
             const btnText = submitBtn.querySelector('.btn-text');
             const btnLoader = submitBtn.querySelector('.btn-loader');
@@ -220,10 +232,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(formData)
                 });
                 const data = await response.json();
-                if (data.success) {   
-                showToast(data.message || 'Appointment booked successfully!', 'success');btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
+                if (data.success) {
+                    // Show success + link to My Appointments
+                    showToast(data.message || 'Appointment booked!', 'success');
+                    btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
+                    setTimeout(() => { window.location.href = '/my-appointments'; }, 2000);
+                } else if (response.status === 401) {
+                    showToast('Please login to book an appointment.', 'error');
+                    setTimeout(() => { window.location.href = '/login?next=appointments'; }, 1800);
+                    btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
                 } else {
-                    showToast(data.message || 'Failed to book appointment. Please try again.', 'error');
+                    showToast(data.message || 'Failed to book. Please try again.', 'error');
                     btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
                 }
             } catch (err) {

@@ -1,4 +1,4 @@
-import os, hashlib, hmac, re
+import os, hashlib, hmac, re, urllib.parse, secrets
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request, HTTPException, Query
@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from jose import JWTError, jwt
 from database import (init_db, add_appointment, get_appointments, get_appointment_by_id,
     update_appointment_status, add_contact_message, get_contact_messages,
-    create_user, get_user_by_email, check_email_exists)
+    create_user, get_user_by_email, check_email_exists, get_appointments_by_email)
 from models import AppointmentForm, ContactForm, LoginForm
 
 CLINIC_NAME = "Crown & Craft Dental Clinic"
@@ -33,33 +33,37 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 SECRET_KEY = os.getenv("SECRET_KEY", "crown-craft-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
-ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
-def _hash_pw(pw):
-    return hashlib.sha256(pw.encode("utf-8")).hexdigest()
+# ── Admin credentials (Nitheesh & Maneesh share same password) ────────────────────
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "m808234")
+def _hash_pw(pw): return hashlib.sha256(pw.encode()).hexdigest()
+def _verify_pw(plain, hashed): return hmac.compare_digest(_hash_pw(plain), hashed)
+ADMIN_USERS = {
+    "nitheesh": _hash_pw(ADMIN_PASSWORD),
+    "maneesh":  _hash_pw(ADMIN_PASSWORD),
+}
 
-def _verify_pw(plain, hashed):
-    return hmac.compare_digest(_hash_pw(plain), hashed)
+# ── Google OAuth config (set these in Vercel env vars) ──────────────────────
+GOOGLE_CLIENT_ID     = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_REDIRECT_URI  = os.getenv("GOOGLE_REDIRECT_URI",
+    "https://crown-and-craft-dental-clinic-2153.vercel.app/auth/google/callback")
 
-ADMIN_PASSWORD_HASH = _hash_pw(ADMIN_PASSWORD)
-
-# startup is now handled by the lifespan context manager above
-
-def create_token(username, role="admin"):
+def create_token(sub, role="patient", name=""):
     expire = datetime.utcnow() + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
-    return jwt.encode({"sub": username, "role": role, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode({"sub": sub, "role": role, "name": name, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 def verify_token(token):
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
-        return None
+    try: return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError: return None
 
-def get_admin_user(request):
+def get_current_user_payload(request):
     token = request.cookies.get("admin_token")
     if not token: return None
-    payload = verify_token(token)
+    return verify_token(token)
+
+def get_admin_user(request):
+    payload = get_current_user_payload(request)
     if payload and payload.get("role") == "admin": return payload.get("sub")
     return None
 
@@ -119,20 +123,21 @@ async def register_user(request: Request):
 
 @app.post("/api/login")
 async def login(form: LoginForm):
-    username = form.username.strip()
-    # Check admin credentials first
-    if username == ADMIN_USERNAME and _verify_pw(form.password, ADMIN_PASSWORD_HASH):
-        token = create_token(username, "admin")
-        response = JSONResponse(content={"success": True, "message": "Welcome back, Admin!", "redirect_url": "/admin"})
-        response.set_cookie(key="admin_token", value=token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600, samesite="lax")
-        return response
-    # Check patient credentials
-    user = get_user_by_email(username.lower())
+    uname = form.username.strip().lower()
+    # Check admin (Nitheesh or Maneesh)
+    if uname in ADMIN_USERS and hmac.compare_digest(_hash_pw(form.password), ADMIN_USERS[uname]):
+        display = uname.title()
+        token = create_token(uname, "admin", display)
+        resp = JSONResponse(content={"success": True, "message": f"Welcome, {display}!", "redirect_url": "/admin"})
+        resp.set_cookie("admin_token", token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS*3600, samesite="lax")
+        return resp
+    # Check patient
+    user = get_user_by_email(uname)
     if user and _verify_pw(form.password, user["password_hash"]):
-        token = create_token(user["email"], "patient")
-        response = JSONResponse(content={"success": True, "message": f"Welcome back, {user['name']}!", "redirect_url": "/"})
-        response.set_cookie(key="admin_token", value=token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600, samesite="lax")
-        return response
+        token = create_token(user["email"], "patient", user["name"])
+        resp = JSONResponse(content={"success": True, "message": f"Welcome back, {user['name']}!", "redirect_url": "/my-appointments"})
+        resp.set_cookie("admin_token", token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS*3600, samesite="lax")
+        return resp
     return JSONResponse(status_code=401, content={"success": False, "message": "Invalid email/username or password."})
 
 @app.get("/api/me")
@@ -142,22 +147,99 @@ async def get_current_user(request: Request):
     payload = verify_token(token)
     if not payload: return JSONResponse(content={"logged_in": False})
     role = payload.get("role", "patient"); sub = payload.get("sub", "")
+    name = payload.get("name", sub)
     if role == "patient":
         user = get_user_by_email(sub)
-        return JSONResponse(content={"logged_in": True, "name": user["name"] if user else sub, "email": sub, "role": role})
-    return JSONResponse(content={"logged_in": True, "name": sub, "role": role})
+        return JSONResponse(content={"logged_in": True, "name": user["name"] if user else name, "email": sub, "role": role})
+    return JSONResponse(content={"logged_in": True, "name": name.title(), "role": role})
+
+@app.get("/my-appointments", response_class=HTMLResponse)
+async def my_appointments(request: Request):
+    payload = get_current_user_payload(request)
+    if not payload or payload.get("role") != "patient":
+        return RedirectResponse(url="/login?next=my-appointments", status_code=302)
+    email = payload.get("sub", "")
+    user  = get_user_by_email(email)
+    apts  = get_appointments_by_email(email)
+    return templates.TemplateResponse("my_appointments.html", ctx(request, user=user, appointments=apts))
+
+
+@app.get("/auth/google")
+async def google_login(request: Request):
+    if not GOOGLE_CLIENT_ID:
+        return RedirectResponse(url="/login?error=google_not_configured")
+    state = secrets.token_urlsafe(16)
+    params = urllib.parse.urlencode({
+        "client_id":     GOOGLE_CLIENT_ID,
+        "redirect_uri":  GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope":         "openid email profile",
+        "state":         state,
+        "access_type":   "offline",
+    })
+    resp = RedirectResponse(url=f"https://accounts.google.com/o/oauth2/v2/auth?{params}")
+    resp.set_cookie("oauth_state", state, httponly=True, max_age=600, samesite="lax")
+    return resp
+
+
+@app.get("/auth/google/callback")
+async def google_callback(request: Request, code: str = None, state: str = None, error: str = None):
+    if error or not code:
+        return RedirectResponse(url="/login?error=google_cancelled")
+    import httpx
+    async with httpx.AsyncClient() as client:
+        token_r = await client.post("https://oauth2.googleapis.com/token", data={
+            "client_id": GOOGLE_CLIENT_ID, "client_secret": GOOGLE_CLIENT_SECRET,
+            "code": code, "redirect_uri": GOOGLE_REDIRECT_URI, "grant_type": "authorization_code"
+        })
+        td = token_r.json()
+        if "error" in td:
+            return RedirectResponse(url="/login?error=google_failed")
+        info_r = await client.get("https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {td['access_token']}"})
+        info = info_r.json()
+    email = info.get("email", "").lower()
+    name  = info.get("name", email.split("@")[0])
+    if not email:
+        return RedirectResponse(url="/login?error=google_no_email")
+    if not check_email_exists(email):
+        create_user(name=name, email=email, phone="", password_hash=_hash_pw(secrets.token_urlsafe(32)))
+    user  = get_user_by_email(email)
+    token = create_token(email, "patient", user["name"] if user else name)
+    resp  = RedirectResponse(url="/my-appointments", status_code=302)
+    resp.set_cookie("admin_token", token, httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS*3600, samesite="lax")
+    return resp
+
 
 @app.post("/api/appointments")
-async def create_appointment(form: AppointmentForm):
+async def create_appointment(request: Request):
+    # Must be logged in to book
+    payload = get_current_user_payload(request)
+    if not payload:
+        return JSONResponse(status_code=401, content={"success": False,
+            "message": "Please login to book an appointment.", "redirect": "/login"})
+    try:
+        body = await request.json()
+        form = AppointmentForm(**body)
+    except Exception:
+        return JSONResponse(status_code=400, content={"success": False, "message": "Invalid form data."})
     try:
         aid = add_appointment(name=form.name, phone=form.phone, email=form.email,
             preferred_date=form.preferred_date, preferred_time=form.preferred_time,
             service=form.service, message=form.message or "")
-        return JSONResponse(content={"success": True,
-            "message": "Appointment booked successfully! We will contact you shortly to confirm.",
-            "appointment_id": aid})
+        return JSONResponse(content={"success": True, "appointment_id": aid,
+            "message": "Appointment booked! ✓ View it in <a href='/my-appointments'>My Appointments</a>."})
     except Exception as e:
         return JSONResponse(status_code=400, content={"success": False, "message": f"Error: {str(e)}"})
+
+
+@app.get("/api/my-appointments")
+async def api_my_appointments(request: Request):
+    payload = get_current_user_payload(request)
+    if not payload or payload.get("role") != "patient":
+        return JSONResponse(status_code=401, content={"success": False, "message": "Unauthorized"})
+    apts = get_appointments_by_email(payload.get("sub", ""))
+    return JSONResponse(content={"success": True, "appointments": apts})
 
 @app.post("/api/admin/appointments/{appointment_id}/status")
 async def update_status(request: Request, appointment_id: int):

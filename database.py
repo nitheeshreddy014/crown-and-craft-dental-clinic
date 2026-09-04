@@ -1,89 +1,129 @@
-import os, sqlite3
+import os, json, sqlite3, urllib.request, urllib.error
 
-# ── Turso (persistent, free 9 GB) ────────────────────────────────────────────
+# ── Turso (persistent, free 9 GB) via pure-Python HTTP API ───────────────────
+# No compiled/binary packages needed — works on any serverless platform.
 # Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in Vercel Environment Variables.
 _TURSO_URL   = os.environ.get("TURSO_DATABASE_URL", "")
 _TURSO_TOKEN = os.environ.get("TURSO_AUTH_TOKEN", "")
 _USE_TURSO   = bool(_TURSO_URL and _TURSO_TOKEN)
+# Convert  libsql://xxx.turso.io  →  https://xxx.turso.io/v2/pipeline
+_TURSO_HTTP  = (_TURSO_URL.replace("libsql://", "https://") + "/v2/pipeline") if _USE_TURSO else ""
 
-if _USE_TURSO:
-    import libsql_experimental as libsql  # type: ignore
-
-# ── Local / ephemeral SQLite fallback (used when Turso vars are absent) ───────
+# ── Local SQLite fallback (dev / Turso vars not set) ─────────────────────────
 _IS_VERCEL = bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
 DB_DIR  = "/tmp/clinic_data" if _IS_VERCEL else os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DB_PATH = os.path.join(DB_DIR, "clinic.db")
 
 
-# ── Connection ────────────────────────────────────────────────────────────────
+# ── Turso HTTP layer ──────────────────────────────────────────────────────────
 
-def get_connection():
-    if _USE_TURSO:
-        return libsql.connect(_TURSO_URL, auth_token=_TURSO_TOKEN)
+def _turso_arg(v):
+    """Convert a Python value → Turso typed argument object."""
+    if v is None:            return {"type": "null",    "value": None}
+    if isinstance(v, bool):  return {"type": "integer", "value": "1" if v else "0"}
+    if isinstance(v, int):   return {"type": "integer", "value": str(v)}
+    if isinstance(v, float): return {"type": "float",   "value": str(v)}
+    return                          {"type": "text",    "value": str(v)}
+
+
+def _turso_cast(cell):
+    """Convert a Turso response cell → Python value."""
+    t, v = cell["type"], cell["value"]
+    if t == "null":    return None
+    if t == "integer": return int(v)
+    if t == "float":   return float(v)
+    return v
+
+
+def _turso_run(sql, params=None):
+    """Execute one SQL statement via Turso HTTP API. Returns result dict."""
+    payload = json.dumps({
+        "requests": [
+            {"type": "execute", "stmt": {
+                "sql":  sql,
+                "args": [_turso_arg(p) for p in (params or [])]
+            }},
+            {"type": "close"}
+        ]
+    }).encode()
+    req = urllib.request.Request(
+        _TURSO_HTTP,
+        data=payload,
+        headers={"Authorization": f"Bearer {_TURSO_TOKEN}",
+                 "Content-Type":  "application/json"},
+        method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            body = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"Turso HTTP {e.code}: {e.read().decode()}") from e
+    res  = body["results"][0]["response"]["result"]
+    cols = [c["name"] for c in res["cols"]]
+    rows = [dict(zip(cols, (_turso_cast(c) for c in row))) for row in res["rows"]]
+    raw_id = res.get("last_insert_rowid")
+    return {"rows": rows,
+            "lastrowid": int(raw_id) if raw_id is not None else None,
+            "rowcount":  res.get("affected_row_count", 0)}
+
+
+# ── SQLite layer (local dev fallback) ─────────────────────────────────────────
+
+def _sqlite_run(sql, params=None):
+    """Execute one SQL statement on local SQLite. Same result dict shape."""
     os.makedirs(DB_DIR, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+    c    = conn.execute(sql, params or [])
+    rows = [dict(r) for r in (c.fetchall() or [])]
+    conn.commit()
+    res  = {"rows": rows, "lastrowid": c.lastrowid, "rowcount": c.rowcount}
+    conn.close()
+    return res
 
 
-def _to_dict(row, cursor):
-    """Single row → dict; handles both sqlite3.Row and libsql plain tuples."""
-    if row is None:
-        return None
-    if hasattr(row, "keys"):                        # sqlite3.Row
-        return dict(row)
-    cols = [d[0] for d in cursor.description]       # libsql tuple
-    return dict(zip(cols, row))
+# ── Unified runner ────────────────────────────────────────────────────────────
 
-
-def _to_dicts(rows, cursor):
-    """Many rows → list[dict]; handles both sqlite3.Row and libsql plain tuples."""
-    if not rows:
-        return []
-    cols = [d[0] for d in cursor.description]
-    if hasattr(rows[0], "keys"):                    # sqlite3.Row
-        return [dict(r) for r in rows]
-    return [dict(zip(cols, r)) for r in rows]       # libsql tuple
+def _run(sql, params=None):
+    """Single entry point: Turso when env vars present, else local SQLite."""
+    return _turso_run(sql, params) if _USE_TURSO else _sqlite_run(sql, params)
 
 
 # ── Schema ────────────────────────────────────────────────────────────────────
 
 def init_db():
-    conn = get_connection()
-    conn.execute("""CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL,
-        email TEXT NOT NULL, preferred_date TEXT NOT NULL, preferred_time TEXT NOT NULL,
-        service TEXT NOT NULL, message TEXT DEFAULT '', appointment_status TEXT DEFAULT 'Pending',
-        created_at TEXT DEFAULT (datetime('now','localtime')))""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS contact_messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL,
-        phone TEXT DEFAULT '', message TEXT NOT NULL,
-        created_at TEXT DEFAULT (datetime('now','localtime')))""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE, phone TEXT DEFAULT '',
-        password_hash TEXT NOT NULL, role TEXT DEFAULT 'patient',
-        created_at TEXT DEFAULT (datetime('now','localtime')))""")
-    conn.commit()
-    conn.close()
+    for stmt in [
+        """CREATE TABLE IF NOT EXISTS appointments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL,
+            email TEXT NOT NULL, preferred_date TEXT NOT NULL, preferred_time TEXT NOT NULL,
+            service TEXT NOT NULL, message TEXT DEFAULT '', appointment_status TEXT DEFAULT 'Pending',
+            created_at TEXT DEFAULT (datetime('now','localtime')))""",
+        """CREATE TABLE IF NOT EXISTS contact_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL,
+            phone TEXT DEFAULT '', message TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now','localtime')))""",
+        """CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE, phone TEXT DEFAULT '',
+            password_hash TEXT NOT NULL, role TEXT DEFAULT 'patient',
+            created_at TEXT DEFAULT (datetime('now','localtime')))"""
+    ]:
+        _run(stmt)
 
 
 # ── Appointments ──────────────────────────────────────────────────────────────
 
 def add_appointment(name, phone, email, preferred_date, preferred_time, service, message=""):
-    conn = get_connection()
-    c = conn.execute(
+    res = _run(
         "INSERT INTO appointments (name,phone,email,preferred_date,preferred_time,service,message)"
         " VALUES (?,?,?,?,?,?,?)",
         (name, phone, email, preferred_date, preferred_time, service, message)
     )
-    conn.commit(); aid = c.lastrowid; conn.close()
-    return aid
+    return res["lastrowid"]
 
 
 def get_appointments(search=None, status_filter=None, date_filter=None):
-    conn = get_connection()
     q = "SELECT * FROM appointments WHERE 1=1"; p = []
     if search:
         q += " AND (name LIKE ? OR email LIKE ? OR phone LIKE ?)"; s = f"%{search}%"; p.extend([s, s, s])
@@ -92,65 +132,47 @@ def get_appointments(search=None, status_filter=None, date_filter=None):
     if date_filter:
         q += " AND preferred_date = ?"; p.append(date_filter)
     q += " ORDER BY created_at DESC"
-    c = conn.execute(q, p); rows = c.fetchall()
-    result = _to_dicts(rows, c); conn.close()
-    return result
+    return _run(q, p)["rows"]
 
 
 def get_appointment_by_id(aid):
-    conn = get_connection()
-    c = conn.execute("SELECT * FROM appointments WHERE id = ?", (aid,))
-    row = c.fetchone(); result = _to_dict(row, c); conn.close()
-    return result
+    rows = _run("SELECT * FROM appointments WHERE id = ?", (aid,))["rows"]
+    return rows[0] if rows else None
 
 
 def update_appointment_status(aid, status):
-    conn = get_connection()
-    c = conn.execute("UPDATE appointments SET appointment_status = ? WHERE id = ?", (status, aid))
-    conn.commit(); ok = c.rowcount > 0; conn.close()
-    return ok
+    res = _run("UPDATE appointments SET appointment_status = ? WHERE id = ?", (status, aid))
+    return res["rowcount"] > 0
 
 
 # ── Contact messages ──────────────────────────────────────────────────────────
 
 def add_contact_message(name, email, phone, message):
-    conn = get_connection()
-    c = conn.execute(
+    res = _run(
         "INSERT INTO contact_messages (name,email,phone,message) VALUES (?,?,?,?)",
         (name, email, phone, message)
     )
-    conn.commit(); mid = c.lastrowid; conn.close()
-    return mid
+    return res["lastrowid"]
 
 
 def get_contact_messages():
-    conn = get_connection()
-    c = conn.execute("SELECT * FROM contact_messages ORDER BY created_at DESC")
-    rows = c.fetchall(); result = _to_dicts(rows, c); conn.close()
-    return result
+    return _run("SELECT * FROM contact_messages ORDER BY created_at DESC")["rows"]
 
 
 # ── Users ─────────────────────────────────────────────────────────────────────
 
 def create_user(name, email, phone, password_hash, role="patient"):
-    conn = get_connection()
-    c = conn.execute(
+    res = _run(
         "INSERT INTO users (name,email,phone,password_hash,role) VALUES (?,?,?,?,?)",
         (name, email, phone, password_hash, role)
     )
-    conn.commit(); uid = c.lastrowid; conn.close()
-    return uid
+    return res["lastrowid"]
 
 
 def get_user_by_email(email):
-    conn = get_connection()
-    c = conn.execute("SELECT * FROM users WHERE email = ?", (email.lower(),))
-    row = c.fetchone(); result = _to_dict(row, c); conn.close()
-    return result
+    rows = _run("SELECT * FROM users WHERE email = ?", (email.lower(),))["rows"]
+    return rows[0] if rows else None
 
 
 def check_email_exists(email):
-    conn = get_connection()
-    c = conn.execute("SELECT 1 FROM users WHERE email = ?", (email.lower(),))
-    exists = c.fetchone() is not None; conn.close()
-    return exists
+    return len(_run("SELECT 1 FROM users WHERE email = ?", (email.lower(),))["rows"]) > 0

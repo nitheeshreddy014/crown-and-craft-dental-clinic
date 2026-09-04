@@ -327,6 +327,24 @@ document.getElementById('su-form').addEventListener('submit', async function(e) 
     }
 });
 
+// ==================== SHOW GOOGLE AUTH ERRORS FROM URL ====================
+const urlParams = new URLSearchParams(window.location.search);
+const gErr = urlParams.get('error');
+if (gErr) {
+    const errMap = {
+        'google_not_configured': '❌ Google login is not configured on the server.',
+        'google_cancelled':      '❌ Google login was cancelled.',
+        'google_token_failed':   '❌ Google token failed — check GOOGLE_CLIENT_SECRET in Vercel.',
+        'google_timeout':        '❌ Google login timed out. Try again.',
+        'google_network_error':  '❌ Network error during Google login.',
+        'google_server_error':   '❌ Server error during Google login.',
+        'google_no_email':       '❌ Could not get your email from Google.',
+    };
+    const errDiv = document.getElementById('si-err');
+    errDiv.textContent = errMap[gErr] || ('❌ Google error: ' + gErr);
+    errDiv.classList.add('show');
+}
+
 // ==================== SOCIAL BUTTONS ====================
 // REMOVED: document.getElementById('btn-g').addEventListener('click', () => showToast('\ud83d\udea7 Google Sign-In \u2014 Coming Soon!'));
 document.getElementById('btn-ms').addEventListener('click', () => showToast('\ud83d\udea7 Microsoft Sign-In \u2014 Coming Soon!'));

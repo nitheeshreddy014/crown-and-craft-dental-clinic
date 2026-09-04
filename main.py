@@ -195,11 +195,6 @@ async def google_callback(request: Request, code: str = None, state: str = None,
     if error or not code:
         return RedirectResponse(url="/login?error=google_cancelled")
 
-    # Step 2 — verify state cookie to prevent CSRF
-    stored_state = request.cookies.get("oauth_state")
-    if not stored_state or stored_state != state:
-        return RedirectResponse(url="/login?error=invalid_state")
-
     try:
         # Step 3 — exchange code for access token (8s timeout)
         async with httpx.AsyncClient(timeout=8.0) as client:

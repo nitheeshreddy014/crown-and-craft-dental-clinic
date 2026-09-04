@@ -46,8 +46,12 @@
                 <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                 <li><a href="#faq" class="nav-link">FAQ</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
-                <!-- Patient portal shown only when logged in (populated by JS) -->
+                <!-- Auth item: hidden by default, shown when logged in (populated by JS) -->
                 <li id="nav-auth-item" style="display:none;"></li>
+                <!-- Patient Portal: shown only when NOT logged in (hidden by JS when logged in) -->
+                <li id="nav-portal-item">
+                    <a href="/login" class="nav-link nav-portal-btn" id="nav-portal-btn">&#128100; Patient Portal</a>
+                </li>
                 <li>
                     <a href="#appointments" class="btn btn-primary nav-book-btn">Book Appointment</a>
                 </li>

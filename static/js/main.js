@@ -298,7 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const authItem = document.getElementById('nav-auth-item');
             if (!authItem) return;
 
+            const portalItem = document.getElementById('nav-portal-item');
+
             if (data.logged_in) {
+                // Hide Patient Portal link when logged in
+                if (portalItem) portalItem.style.display = 'none';
                 // Show the auth item only when logged in
                 authItem.style.display = 'block';
 

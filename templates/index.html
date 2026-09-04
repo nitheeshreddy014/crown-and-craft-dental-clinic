@@ -46,8 +46,10 @@
                 <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                 <li><a href="#faq" class="nav-link">FAQ</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li id="nav-auth-item">
-                    <a href="/login" class="nav-link nav-admin-link" id="nav-auth-btn">🔒 Login</a>
+                <!-- Patient portal shown only when logged in (populated by JS) -->
+                <li id="nav-auth-item" style="display:none;"></li>
+                <li>
+                    <a href="#appointments" class="btn btn-primary nav-book-btn">Book Appointment</a>
                 </li>
             </ul>
             <div class="nav-toggle" id="nav-toggle">
@@ -692,6 +694,9 @@
                 </div>
                 <div class="footer-bottom">
                     <p>&copy; 2024 {{ clinic_name }}. All rights reserved. | Designed with ❤️ for better smiles.</p>
+                    <p style="margin-top:8px;font-size:0.72rem;opacity:0.25;">
+                        <a href="/login" style="color:inherit;text-decoration:none;" title="Staff Access">Staff Portal</a>
+                    </p>
                 </div>
             </div>
         </div>

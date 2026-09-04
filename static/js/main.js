@@ -295,22 +295,25 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/me');
             const data = await res.json();
-            const authBtn = document.getElementById('nav-auth-btn');
             const authItem = document.getElementById('nav-auth-item');
-            if (!authBtn || !authItem) return;
+            if (!authItem) return;
 
             if (data.logged_in) {
+                // Show the auth item only when logged in
+                authItem.style.display = 'block';
+
                 if (data.role === 'admin') {
-                    // Admin logged in → show Dashboard link
-                    authBtn.href = '/admin';
-                    authBtn.innerHTML = '\uD83D\uDCCA Dashboard';
-                    authBtn.style.color = '#0ea5e9';
+                    // Admin: show subtle Dashboard link
+                    authItem.innerHTML = `
+                        <a href="/admin" class="nav-link nav-user-btn" style="color:#0ea5e9;">
+                            &#128202; Dashboard
+                        </a>`;
                 } else {
-                    // Patient logged in → show name + logout
+                    // Patient: show name with dropdown
                     authItem.innerHTML = `
                         <div class="nav-user-menu" id="nav-user-menu">
                             <a href="#" class="nav-link nav-user-btn" id="nav-user-btn">
-                                \uD83D\uDC64 ${data.name}
+                                &#128100; ${data.name}
                                 <span class="nav-user-caret">&#9660;</span>
                             </a>
                             <div class="nav-user-dropdown" id="nav-user-dropdown">
@@ -319,17 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div class="nav-user-email">${data.email}</div>
                                 </div>
                                 <a href="/api/logout" class="nav-dropdown-item nav-dropdown-logout">
-                                    \uD83D\uDEAA Logout
+                                    &#128682; Logout
                                 </a>
                             </div>
                         </div>`;
-
-                    // Toggle dropdown on click
                     document.getElementById('nav-user-btn').addEventListener('click', (e) => {
                         e.preventDefault();
                         document.getElementById('nav-user-dropdown').classList.toggle('open');
                     });
-                    // Close dropdown on outside click
                     document.addEventListener('click', (e) => {
                         const menu = document.getElementById('nav-user-menu');
                         if (menu && !menu.contains(e.target)) {
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             }
-            // Not logged in → keep default 🔒 Login link
+            // Not logged in: nav-auth-item stays hidden, only Book Appointment shows
         } catch(e) {}
     }
     initAuthState();

@@ -84,12 +84,27 @@ ul { list-style: none; }
 }
 .nav-link:hover, .nav-link.active { color: var(--white); }
 .nav-link:hover::after, .nav-link.active::after { width: 60%; }
-.nav-admin-link {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(139, 92, 246, 0.15));
-    border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 8px; font-size: 0.82rem;
+.nav-admin-link { display: none; } /* hidden — admin accesses via /admin directly */
+
+/* Book Appointment CTA button in navbar */
+.nav-book-btn {
+    padding: 9px 18px !important;
+    background: linear-gradient(135deg, #0ea5e9, #8b5cf6) !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(14,165,233,0.3);
+    white-space: nowrap;
 }
-.nav-admin-link::after { display: none; }
-.nav-admin-link:hover { background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(139, 92, 246, 0.25)); }
+.nav-book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14,165,233,0.45);
+    color: #fff !important;
+}
+.nav-book-btn::after { display: none !important; }
 
 /* ── Patient user dropdown menu ── */
 .nav-user-menu { position: relative; }

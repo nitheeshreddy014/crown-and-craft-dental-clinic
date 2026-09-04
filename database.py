@@ -8,8 +8,7 @@ _TURSO_TOKEN = os.environ.get("TURSO_AUTH_TOKEN", "")
 # Convert  libsql://xxx.turso.io  →  https://xxx.turso.io/v2/pipeline
 _TURSO_HTTP  = _TURSO_URL.replace("libsql://", "https://") + "/v2/pipeline" if _TURSO_URL else ""
 
-if not _TURSO_URL or not _TURSO_TOKEN:
-    raise RuntimeError("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN must be set in environment variables.")
+# Turso credentials are validated lazily when first DB call is made
 
 
 # ── Turso HTTP layer ──────────────────────────────────────────────────────────

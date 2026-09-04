@@ -19,7 +19,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()          # initialise DB on every cold start
+    try:
+        init_db()
+        print("DB init successful")
+    except Exception as e:
+        # Log the real error so it shows in Vercel logs
+        print(f"DB init failed: {e}")
+        # Do NOT crash — let the app start so routes can return proper errors
     yield
 
 app = FastAPI(title=CLINIC_NAME, version="1.0.0", lifespan=lifespan)

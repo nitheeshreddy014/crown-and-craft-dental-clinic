@@ -54,6 +54,8 @@ def _turso_run(sql, params=None):
             body = json.loads(r.read())
     except urllib.error.HTTPError as e:
         raise RuntimeError(f"Turso HTTP {e.code}: {e.read().decode()}") from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Turso connection error: {e.reason}") from e
     res  = body["results"][0]["response"]["result"]
     cols = [c["name"] for c in res["cols"]]
     rows = [dict(zip(cols, (_turso_cast(c) for c in row))) for row in res["rows"]]

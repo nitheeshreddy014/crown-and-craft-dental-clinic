@@ -1,5 +1,4 @@
 import os, hashlib, hmac, re, urllib.parse, secrets
-import httpx
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request, HTTPException, Query
@@ -196,6 +195,7 @@ async def google_callback(request: Request, code: str = None, state: str = None,
         return RedirectResponse(url="/login?error=google_cancelled")
 
     try:
+        import httpx
         # Step 3 — exchange code for access token (8s timeout)
         async with httpx.AsyncClient(timeout=8.0) as client:
             token_r = await client.post(

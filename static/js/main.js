@@ -290,6 +290,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     };
 
+    // ========== AUTH STATE CHECK ==========
+    async function initAuthState() {
+        try {
+            const res = await fetch('/api/me');
+            const data = await res.json();
+            const authBtn = document.getElementById('nav-auth-btn');
+            const authItem = document.getElementById('nav-auth-item');
+            if (!authBtn || !authItem) return;
+
+            if (data.logged_in) {
+                if (data.role === 'admin') {
+                    // Admin logged in → show Dashboard link
+                    authBtn.href = '/admin';
+                    authBtn.innerHTML = '\uD83D\uDCCA Dashboard';
+                    authBtn.style.color = '#0ea5e9';
+                } else {
+                    // Patient logged in → show name + logout
+                    authItem.innerHTML = `
+                        <div class="nav-user-menu" id="nav-user-menu">
+                            <a href="#" class="nav-link nav-user-btn" id="nav-user-btn">
+                                \uD83D\uDC64 ${data.name}
+                                <span class="nav-user-caret">&#9660;</span>
+                            </a>
+                            <div class="nav-user-dropdown" id="nav-user-dropdown">
+                                <div class="nav-user-info">
+                                    <div class="nav-user-name">${data.name}</div>
+                                    <div class="nav-user-email">${data.email}</div>
+                                </div>
+                                <a href="/api/logout" class="nav-dropdown-item nav-dropdown-logout">
+                                    \uD83D\uDEAA Logout
+                                </a>
+                            </div>
+                        </div>`;
+
+                    // Toggle dropdown on click
+                    document.getElementById('nav-user-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.getElementById('nav-user-dropdown').classList.toggle('open');
+                    });
+                    // Close dropdown on outside click
+                    document.addEventListener('click', (e) => {
+                        const menu = document.getElementById('nav-user-menu');
+                        if (menu && !menu.contains(e.target)) {
+                            const dd = document.getElementById('nav-user-dropdown');
+                            if (dd) dd.classList.remove('open');
+                        }
+                    });
+                }
+            }
+            // Not logged in → keep default 🔒 Login link
+        } catch(e) {}
+    }
+    initAuthState();
+
     // ========== HERO PARALLAX EFFECT ==========
     const hero = document.querySelector('.hero');
     if (hero) {

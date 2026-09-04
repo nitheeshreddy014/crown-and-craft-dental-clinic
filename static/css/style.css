@@ -90,6 +90,39 @@ ul { list-style: none; }
 }
 .nav-admin-link::after { display: none; }
 .nav-admin-link:hover { background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(139, 92, 246, 0.25)); }
+
+/* ── Patient user dropdown menu ── */
+.nav-user-menu { position: relative; }
+.nav-user-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(139,92,246,0.15));
+    border: 1px solid rgba(14,165,233,0.2); border-radius: 8px; font-size: 0.82rem;
+    cursor: pointer;
+}
+.nav-user-btn::after { display: none; }
+.nav-user-caret { font-size: 0.6rem; opacity: 0.6; transition: transform 0.3s; }
+.nav-user-dropdown {
+    display: none; position: absolute; top: calc(100% + 10px); right: 0;
+    min-width: 200px; background: rgba(15,23,42,0.97);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4); z-index: 1000; overflow: hidden;
+    animation: ddFadeIn 0.2s ease;
+}
+.nav-user-dropdown.open { display: block; }
+@keyframes ddFadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.nav-user-info { padding: 14px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.nav-user-name { font-size: 0.88rem; font-weight: 600; color: #fff; }
+.nav-user-email { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.nav-dropdown-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 16px; font-size: 0.85rem; color: rgba(255,255,255,0.7);
+    text-decoration: none; transition: all 0.2s;
+}
+.nav-dropdown-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.nav-dropdown-logout { color: #f87171; }
+.nav-dropdown-logout:hover { background: rgba(239,68,68,0.1); color: #fca5a5; }
+
 .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1001; padding: 4px; }
 .nav-toggle span { width: 25px; height: 2px; background: var(--white); border-radius: 2px; transition: var(--transition); }
 .nav-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }

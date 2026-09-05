@@ -286,4 +286,3 @@ This project is open source and available under the [MIT License](https://openso
 ---
 
 > Built with ❤️ for **Crown & Craft Dental Clinic** | **Dr. Maneesh Reddy Pocharam**
-

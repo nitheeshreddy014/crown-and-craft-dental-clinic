@@ -66,8 +66,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "crown-craft-secret-key-change-in-productio
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
-# ── Admin credentials (Nitheesh & Maneesh share same password) ────────────────────
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "m808234")
+# ── Admin credentials (loaded from environment variable only) ────────────────────
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+if not ADMIN_PASSWORD:
+    raise RuntimeError("ADMIN_PASSWORD environment variable is not set!")
 def _hash_pw(pw): return hashlib.sha256(pw.encode()).hexdigest()
 def _verify_pw(plain, hashed): return hmac.compare_digest(_hash_pw(plain), hashed)
 ADMIN_USERS = {

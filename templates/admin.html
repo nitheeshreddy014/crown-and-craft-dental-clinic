@@ -200,17 +200,28 @@
                 <form class="filter-bar" id="filter-form" method="GET" action="/admin">
                     <input type="hidden" name="tab" value="appointments">
                     <input type="text" name="search" placeholder="🔍 Search by name, email, phone..." value="{{ search }}">
-                    <select name="status">
+                    <select name="status" onchange="this.form.submit()">
                         <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All Status</option>
                         <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
                         <option value="Confirmed" {% if status_filter == 'Confirmed' %}selected{% endif %}>Confirmed</option>
                         <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
                         <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
                     </select>
-                    <input type="date" name="date" value="{{ date_filter }}">
+                    <input type="date" name="date" value="{{ date_filter }}" onchange="this.form.submit()">
                     <button type="submit" class="filter-btn filter-btn-search">🔍 Search</button>
                     <a href="/admin" class="filter-btn filter-btn-reset" style="text-decoration:none;text-align:center;">Reset</a>
                 </form>
+                <div style="margin-bottom:12px;font-size:0.82rem;color:var(--text-muted)">
+                    {% if status_filter != 'All' or search or date_filter %}
+                        🔍 Showing <strong style="color:#fff">{{ appointments|length }}</strong> result{{ 's' if appointments|length != 1 else '' }}
+                        {% if status_filter != 'All' %} for status <span style="color:var(--primary)">{{ status_filter }}</span>{% endif %}
+                        {% if search %} matching <span style="color:var(--primary)">"{{ search }}"</span>{% endif %}
+                        {% if date_filter %} on <span style="color:var(--primary)">{{ date_filter }}</span>{% endif %}
+                        — <a href="/admin" style="color:var(--danger);text-decoration:none">✕ Clear filters</a>
+                    {% else %}
+                        Showing all <strong style="color:#fff">{{ appointments|length }}</strong> appointment{{ 's' if appointments|length != 1 else '' }}
+                    {% endif %}
+                </div>
                 {% if appointments|length > 0 %}
                 <div class="table-wrapper">
                     <table>

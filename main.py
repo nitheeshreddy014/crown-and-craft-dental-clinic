@@ -152,19 +152,25 @@ async def login_page(request: Request):
 async def admin_dashboard(request: Request,
         search: str = Query(default=None), status: str = Query(default=None),
         date: str = Query(default=None), tab: str = Query(default="appointments")):
+    import asyncio
     admin = get_admin_user(request)
     if not admin: return RedirectResponse(url="/login", status_code=302)
-    appointments = get_appointments(search=search, status_filter=status, date_filter=date)
-    messages     = get_contact_messages()
-    slots        = get_slots()
-    analytics    = get_analytics()
-    user_obj     = get_user_by_email(admin) if get_user_by_email(admin) else None
-    admin_totp   = None
-    if user_obj:
-        admin_totp = user_obj.get("totp_secret")
+
+    # Run all 3 DB queries concurrently instead of sequentially
+    loop = asyncio.get_event_loop()
+    appointments, messages, slots = await asyncio.gather(
+        loop.run_in_executor(None, lambda: get_appointments(search=search, status_filter=status, date_filter=date)),
+        loop.run_in_executor(None, get_contact_messages),
+        loop.run_in_executor(None, get_slots),
+    )
+
+    # Fetch admin TOTP setting (lightweight — uses cached user lookup)
+    user_obj   = get_user_by_email(admin + "@clinic.local")
+    admin_totp = user_obj.get("totp_secret") if user_obj else None
+
     return templates.TemplateResponse("admin.html", ctx(request,
         admin_user=admin, appointments=appointments, messages=messages,
-        slots=slots, analytics=analytics,
+        slots=slots,
         admin_totp_configured=bool(admin_totp),
         search=search or "", status_filter=status or "All",
         date_filter=date or "", active_tab=tab))

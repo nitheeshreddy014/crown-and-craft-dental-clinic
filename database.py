@@ -72,6 +72,53 @@ def _turso_run(sql, params=None):
             "rowcount":  res.get("affected_row_count", 0)}
 
 
+def _turso_batch(statements):
+    """Execute multiple SQL statements in ONE HTTP round-trip.
+    statements: list of (sql, params) tuples.
+    Returns list of result dicts in the same order.
+    """
+    requests = [
+        {"type": "execute", "stmt": {
+            "sql":  sql,
+            "args": [_turso_arg(p) for p in (params or [])]
+        }}
+        for sql, params in statements
+    ]
+    requests.append({"type": "close"})
+    payload = json.dumps({"requests": requests}).encode()
+    req = urllib.request.Request(
+        _TURSO_HTTP,
+        data=payload,
+        headers={"Authorization": f"Bearer {_TURSO_TOKEN}",
+                 "Content-Type":  "application/json"},
+        method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            body = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"Turso HTTP {e.code}: {e.read().decode()}") from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Turso connection error: {e.reason}") from e
+
+    results = []
+    for i, result_wrapper in enumerate(body["results"][:-1]):  # skip the close
+        if result_wrapper.get("type") == "error":
+            err = result_wrapper.get("error", {})
+            raise RuntimeError(f"Turso batch error [{i}]: {err.get('message', result_wrapper)}")
+        response = result_wrapper.get("response", {})
+        if response.get("type") == "error":
+            raise RuntimeError(f"Turso batch response error [{i}]: {response.get('error', response)}")
+        res  = response["result"]
+        cols = [c["name"] for c in res["cols"]]
+        rows = [dict(zip(cols, (_turso_cast(c) for c in row))) for row in res["rows"]]
+        raw_id = res.get("last_insert_rowid")
+        results.append({"rows": rows,
+                        "lastrowid": int(raw_id) if raw_id is not None else None,
+                        "rowcount":  res.get("affected_row_count", 0)})
+    return results
+
+
 # ── Unified runner ────────────────────────────────────────────────────────────
 
 def _run(sql, params=None):
@@ -219,15 +266,19 @@ def get_appointments_for_tomorrow():
     )["rows"]
 
 def get_analytics():
-    monthly   = _run("SELECT strftime('%Y-%m', created_at) AS month, COUNT(*) AS count FROM appointments GROUP BY month ORDER BY month DESC LIMIT 12")["rows"]
-    by_service= _run("SELECT service, COUNT(*) AS count FROM appointments GROUP BY service ORDER BY count DESC")["rows"]
-    by_status = _run("SELECT appointment_status AS status, COUNT(*) AS count FROM appointments GROUP BY appointment_status")["rows"]
-    patients  = _run("SELECT COUNT(DISTINCT email) AS cnt FROM appointments")["rows"]
+    """Fetch all analytics data in ONE Turso HTTP round-trip."""
+    results = _turso_batch([
+        ("SELECT strftime('%Y-%m', created_at) AS month, COUNT(*) AS count FROM appointments GROUP BY month ORDER BY month DESC LIMIT 12", None),
+        ("SELECT service, COUNT(*) AS count FROM appointments GROUP BY service ORDER BY count DESC", None),
+        ("SELECT appointment_status AS status, COUNT(*) AS count FROM appointments GROUP BY appointment_status", None),
+        ("SELECT COUNT(DISTINCT email) AS cnt FROM appointments", None),
+    ])
+    monthly, by_service, by_status, patients_r = [r["rows"] for r in results]
     return {
         "monthly":        list(reversed(monthly)),
         "by_service":     by_service,
         "by_status":      by_status,
-        "total_patients": patients[0]["cnt"] if patients else 0,
+        "total_patients": patients_r[0]["cnt"] if patients_r else 0,
     }
 
 

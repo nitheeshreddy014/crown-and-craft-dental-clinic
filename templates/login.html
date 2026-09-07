@@ -120,13 +120,24 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;bac
 <button class="mx" id="fmx">&#10005;</button>
 <div class="mi">&#128273;</div>
 <h3 class="mt">Forgot Your Password?</h3>
-<p class="mtx">Contact the system administrator to reset your password.</p>
-<div class="mci">
-<div class="mci-i"><span class="ic">&#9993;&#65039;</span><div><div class="lb">Email</div><div class="vl">admin@crownandcraftdental.com</div></div></div>
-<div class="mci-i"><span class="ic">&#128222;</span><div><div class="lb">Phone</div><div class="vl">+91 99493 35358</div></div></div>
-<div class="mci-i"><span class="ic">&#128336;</span><div><div class="lb">Available</div><div class="vl">Mon-Sat, 9 AM - 7 PM</div></div></div>
+<p class="mtx" id="fp-sub">Enter your registered email and we will send you a reset link instantly.</p>
+<div id="fp-form-wrap">
+  <div class="fg" style="margin:16px 0 12px">
+    <div class="iw" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;display:flex;align-items:center;padding:0 12px">
+      <span style="font-size:1rem;margin-right:8px">&#9993;&#65039;</span>
+      <input type="email" id="fp-email" placeholder="your@email.com"
+        style="flex:1;padding:12px 0;background:transparent;border:none;color:#fff;font-family:inherit;font-size:.9rem;outline:none">
+    </div>
+  </div>
+  <div id="fp-msg" style="font-size:.82rem;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none"></div>
+  <button class="mb-btn" id="fp-send-btn" onclick="sendResetLink()">&#128233; Send Reset Link</button>
 </div>
-<button class="mb-btn" id="fmok">Got it, Thanks!</button>
+<div id="fp-success-wrap" style="display:none;text-align:center;padding:8px 0">
+  <div style="font-size:2.5rem;margin-bottom:10px">&#9989;</div>
+  <p style="color:#4ade80;font-size:.9rem;font-weight:600;margin-bottom:6px">Reset link sent!</p>
+  <p style="color:rgba(255,255,255,.5);font-size:.82rem">Check your inbox (and spam folder). The link expires in 30 minutes.</p>
+  <button class="mb-btn" id="fmok" style="margin-top:16px">Done</button>
+</div>
 </div>
 </div>
 
@@ -356,10 +367,59 @@ function showToast(msg) {
 }
 
 // ==================== FORGOT PASSWORD MODAL ====================
-document.getElementById('forgot-btn').addEventListener('click', () => document.getElementById('fmod').classList.add('show'));
-document.getElementById('fmx').addEventListener('click', () => document.getElementById('fmod').classList.remove('show'));
-document.getElementById('fmok').addEventListener('click', () => document.getElementById('fmod').classList.remove('show'));
-document.getElementById('fmod').addEventListener('click', e => { if (e.target.id === 'fmod') e.target.classList.remove('show'); });
+function openForgotModal() {
+    document.getElementById('fmod').classList.add('show');
+    document.getElementById('fp-email').value = '';
+    document.getElementById('fp-msg').style.display = 'none';
+    document.getElementById('fp-form-wrap').style.display = 'block';
+    document.getElementById('fp-success-wrap').style.display = 'none';
+    document.getElementById('fp-send-btn').disabled = false;
+    document.getElementById('fp-send-btn').textContent = '📩 Send Reset Link';
+}
+function closeForgotModal() { document.getElementById('fmod').classList.remove('show'); }
+document.getElementById('forgot-btn').addEventListener('click', openForgotModal);
+document.getElementById('fmx').addEventListener('click', closeForgotModal);
+document.getElementById('fmod').addEventListener('click', e => { if (e.target.id === 'fmod') closeForgotModal(); });
+async function sendResetLink() {
+    const email = document.getElementById('fp-email').value.trim();
+    const msg   = document.getElementById('fp-msg');
+    const btn   = document.getElementById('fp-send-btn');
+    msg.style.display = 'none';
+    if (!email || !email.includes('@')) {
+        msg.textContent = 'Please enter a valid email address.';
+        msg.style.background = 'rgba(239,68,68,.12)';
+        msg.style.color = '#fca5a5';
+        msg.style.border = '1px solid rgba(239,68,68,.25)';
+        msg.style.display = 'block'; return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+        const res  = await fetch('/api/forgot-password', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('fp-form-wrap').style.display = 'none';
+            document.getElementById('fp-success-wrap').style.display = 'block';
+            document.getElementById('fmok').addEventListener('click', closeForgotModal);
+        } else {
+            msg.textContent = data.message || 'Something went wrong. Please try again.';
+            msg.style.background = 'rgba(239,68,68,.12)';
+            msg.style.color = '#fca5a5';
+            msg.style.border = '1px solid rgba(239,68,68,.25)';
+            msg.style.display = 'block';
+            btn.disabled = false; btn.textContent = '📩 Send Reset Link';
+        }
+    } catch {
+        msg.textContent = 'Connection error. Please try again.';
+        msg.style.background = 'rgba(239,68,68,.12)';
+        msg.style.color = '#fca5a5';
+        msg.style.border = '1px solid rgba(239,68,68,.25)';
+        msg.style.display = 'block';
+        btn.disabled = false; btn.textContent = '📩 Send Reset Link';
+    }
+}
 </script>
 </body>
 </html>

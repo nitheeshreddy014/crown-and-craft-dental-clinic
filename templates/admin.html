@@ -128,6 +128,15 @@
             <a href="#" data-tab="messages" onclick="switchTab('messages', this); return false;">
                 <span class="nav-icon">📩</span> Contact Messages
             </a>
+            <a href="#" data-tab="analytics" onclick="switchTab('analytics', this); return false;">
+                <span class="nav-icon">📊</span> Analytics
+            </a>
+            <a href="#" data-tab="slots" onclick="switchTab('slots', this); return false;">
+                <span class="nav-icon">🗓️</span> Slot Management
+            </a>
+            <a href="#" data-tab="twofa" onclick="switchTab('twofa', this); return false;">
+                <span class="nav-icon">🔐</span> 2FA Security
+            </a>
             <a href="/" target="_blank">
                 <span class="nav-icon">🌐</span> View Website
             </a>
@@ -180,9 +189,12 @@
                     <div class="sc-label">Cancelled</div>
                 </div>
             </div>
-            <div class="tab-nav">
+            <div class="tab-nav" style="flex-wrap:wrap;">
                 <button class="tab-btn active" onclick="switchTab('appointments', this)">📋 Appointments</button>
                 <button class="tab-btn" onclick="switchTab('messages', this)">📩 Messages ({{ messages|length }})</button>
+                <button class="tab-btn" onclick="switchTab('analytics', this)">📊 Analytics</button>
+                <button class="tab-btn" onclick="switchTab('slots', this)">🗓️ Slots</button>
+                <button class="tab-btn" onclick="switchTab('twofa', this)">🔐 2FA</button>
             </div>
             <div class="tab-content active" id="tab-appointments">
                 <form class="filter-bar" id="filter-form" method="GET" action="/admin">
@@ -266,9 +278,87 @@
                     <p>Contact form submissions will appear here.</p>
                 </div>
                 {% endif %}
+            <!-- ===== ANALYTICS TAB ===== -->
+            <div class="tab-content" id="tab-analytics">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px">
+                    <div class="summary-card"><div class="sc-icon">👥</div><div class="sc-number" id="an-patients">—</div><div class="sc-label">Unique Patients</div></div>
+                    <div class="summary-card sc-confirmed"><div class="sc-icon">📋</div><div class="sc-number">{{ appointments|length }}</div><div class="sc-label">Total Bookings</div></div>
+                    <div class="summary-card sc-completed"><div class="sc-icon">✅</div><div class="sc-number">{{ appointments|selectattr('appointment_status','equalto','Completed')|list|length }}</div><div class="sc-label">Completed</div></div>
+                    <div class="summary-card sc-cancelled"><div class="sc-icon">❌</div><div class="sc-number">{{ appointments|selectattr('appointment_status','equalto','Cancelled')|list|length }}</div><div class="sc-label">Cancelled</div></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div class="table-wrapper" style="padding:20px">
+                        <h3 style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:16px">📈 Bookings Per Month</h3>
+                        <canvas id="chart-monthly" height="220"></canvas>
+                    </div>
+                    <div class="table-wrapper" style="padding:20px">
+                        <h3 style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:16px">🦷 Popular Services</h3>
+                        <canvas id="chart-services" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="table-wrapper" style="margin-top:24px;padding:20px">
+                    <h3 style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:16px">📋 Status Breakdown</h3>
+                    <div style="max-width:360px;margin:0 auto"><canvas id="chart-status" height="220"></canvas></div>
+                </div>
+            </div>
+
+            <!-- ===== SLOTS TAB ===== -->
+            <div class="tab-content" id="tab-slots">
+                <div style="display:grid;grid-template-columns:340px 1fr;gap:24px;flex-wrap:wrap">
+                    <div class="table-wrapper" style="padding:24px">
+                        <h3 style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:16px">➕ Add Available Slot</h3>
+                        <div style="margin-bottom:14px">
+                            <label style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:6px">Date</label>
+                            <input type="date" id="slot-date" style="width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;outline:none">
+                        </div>
+                        <div style="margin-bottom:18px">
+                            <label style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:6px">Time</label>
+                            <input type="time" id="slot-time" style="width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;outline:none">
+                        </div>
+                        <button onclick="addSlot()" style="width:100%;padding:11px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer">➕ Add Slot</button>
+                        <div id="slot-msg" style="margin-top:12px;font-size:.82rem;display:none"></div>
+                    </div>
+                    <div class="table-wrapper" style="padding:24px">
+                        <h3 style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:16px">🗓️ Upcoming Slots</h3>
+                        <div id="slots-list"><p style="color:var(--text-muted);font-size:.85rem">Loading…</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 2FA TAB ===== -->
+            <div class="tab-content" id="tab-twofa">
+                <div style="max-width:520px">
+                    <div class="table-wrapper" style="padding:28px">
+                        <h3 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px">🔐 Two-Factor Authentication (2FA)</h3>
+                        <p style="font-size:.84rem;color:var(--text-muted);margin-bottom:20px;line-height:1.7">Protect your admin account with TOTP-based 2FA. Works with Google Authenticator, Authy, or any TOTP app — all free.</p>
+                        {% if admin_totp_configured %}
+                        <div style="padding:12px 16px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;color:#4ade80;font-size:.84rem;margin-bottom:20px">✅ 2FA is already configured for your account.</div>
+                        {% endif %}
+                        <button onclick="setup2FA()" style="padding:12px 24px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:20px">{{ '🔄 Re-generate 2FA Secret' if admin_totp_configured else '⚙️ Set Up 2FA Now' }}</button>
+                        <div id="qr-section" style="display:none">
+                            <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Scan this QR code with your authenticator app, then verify below:</p>
+                            <div id="qr-code" style="background:#fff;padding:12px;border-radius:10px;display:inline-block;margin-bottom:16px"></div>
+                            <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:4px">Or enter this secret manually:</p>
+                            <code id="totp-secret" style="font-size:.82rem;color:#0ea5e9;background:rgba(14,165,233,.08);padding:8px 14px;border-radius:6px;display:block;margin-bottom:16px;word-break:break-all"></code>
+                            <div style="display:flex;gap:10px;margin-bottom:12px">
+                                <input type="text" id="totp-code" placeholder="Enter 6-digit code" maxlength="6" style="flex:1;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;letter-spacing:4px;text-align:center">
+                                <button onclick="verify2FA()" style="padding:10px 20px;background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.3);border-radius:10px;color:#4ade80;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer">Verify ✓</button>
+                            </div>
+                            <div id="twofa-msg" style="font-size:.82rem;display:none"></div>
+                        </div>
+                        <div style="margin-top:24px;padding:16px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.07)">
+                            <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:8px"><strong style="color:#fff">How to use:</strong></p>
+                            <p style="font-size:.78rem;color:var(--text-muted);line-height:1.7">1. Install <strong style="color:#fff">Google Authenticator</strong> (free, no account needed)<br>2. Click Set Up 2FA and scan the QR code<br>3. Enter the 6-digit code to verify setup<br>4. Each login will require this rotating code</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script>
         function switchTab(tabName, el) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -305,7 +395,130 @@
             setTimeout(() => toast.remove(), 3200);
         }
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('tab') === 'messages') switchTab('messages');
+        const initTab = urlParams.get('tab');
+        if (initTab) switchTab(initTab);
+
+        // ── Analytics ─────────────────────────────────────────────────────
+        async function loadAnalytics() {
+            try {
+                const res  = await fetch('/api/admin/analytics');
+                const data = await res.json();
+                if (!data.success) return;
+                document.getElementById('an-patients').textContent = data.total_patients;
+                const months = data.monthly.map(r => r.month);
+                const counts = data.monthly.map(r => r.count);
+                new Chart(document.getElementById('chart-monthly'), {
+                    type: 'bar',
+                    data: { labels: months, datasets: [{ label: 'Bookings', data: counts,
+                        backgroundColor: 'rgba(14,165,233,.6)', borderColor: '#0ea5e9', borderWidth: 1, borderRadius: 6 }] },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8' } } },
+                        scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' } },
+                                  y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true } } }
+                });
+                new Chart(document.getElementById('chart-services'), {
+                    type: 'horizontalBar' in Chart.defaults ? 'horizontalBar' : 'bar',
+                    data: { labels: data.by_service.map(r => r.service), datasets: [{ label: 'Count',
+                        data: data.by_service.map(r => r.count),
+                        backgroundColor: ['rgba(139,92,246,.6)','rgba(14,165,233,.6)','rgba(34,197,94,.6)','rgba(245,158,11,.6)','rgba(239,68,68,.6)'],
+                        borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } },
+                        scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.05)' }, beginAtZero: true },
+                                  y: { ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+                });
+                const statusColors = { 'Pending':'rgba(245,158,11,.7)','Confirmed':'rgba(59,130,246,.7)','Completed':'rgba(34,197,94,.7)','Cancelled':'rgba(239,68,68,.7)' };
+                new Chart(document.getElementById('chart-status'), {
+                    type: 'doughnut',
+                    data: { labels: data.by_status.map(r => r.status),
+                        datasets: [{ data: data.by_status.map(r => r.count),
+                            backgroundColor: data.by_status.map(r => statusColors[r.status] || 'rgba(148,163,184,.6)'),
+                            borderWidth: 0, hoverOffset: 8 }] },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', padding: 16 } } }, cutout: '65%' }
+                });
+            } catch(e) { console.error('Analytics load error', e); }
+        }
+
+        // ── Slot Management ───────────────────────────────────────────────
+        async function loadSlots() {
+            const list = document.getElementById('slots-list');
+            try {
+                const res  = await fetch('/api/admin/slots');
+                const data = await res.json();
+                if (!data.slots.length) { list.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">No upcoming slots.</p>'; return; }
+                list.innerHTML = `<table style="width:100%;border-collapse:collapse">
+                    <thead><tr>
+                        <th style="padding:8px 12px;text-align:left;font-size:.75rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.06)">Date</th>
+                        <th style="padding:8px 12px;text-align:left;font-size:.75rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.06)">Time</th>
+                        <th style="padding:8px 12px;text-align:left;font-size:.75rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.06)">Status</th>
+                        <th style="padding:8px 12px;font-size:.75rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.06)">Action</th>
+                    </tr></thead>
+                    <tbody>${data.slots.map(s => `<tr id="slot-row-${s.id}">
+                        <td style="padding:8px 12px;font-size:.84rem;color:#e2e8f0">${s.slot_date}</td>
+                        <td style="padding:8px 12px;font-size:.84rem;color:#e2e8f0">${s.slot_time}</td>
+                        <td style="padding:8px 12px">${s.is_available ? '<span style="color:#4ade80;font-size:.78rem;font-weight:600">✓ Available</span>' : '<span style="color:#f87171;font-size:.78rem;font-weight:600">✕ Blocked</span>'}</td>
+                        <td style="padding:8px 12px;display:flex;gap:6px">
+                            <button onclick="toggleSlot(${s.id}, ${s.is_available ? 0 : 1})" style="padding:5px 10px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);color:#fbbf24;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">${s.is_available ? 'Block' : 'Unblock'}</button>
+                            <button onclick="deleteSlot(${s.id})" style="padding:5px 10px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🗑</button>
+                        </td>
+                    </tr>`).join('')}</tbody></table>`;
+            } catch(e) { list.innerHTML = '<p style="color:#f87171;font-size:.85rem">Failed to load slots.</p>'; }
+        }
+        async function addSlot() {
+            const date = document.getElementById('slot-date').value;
+            const time = document.getElementById('slot-time').value;
+            const msg  = document.getElementById('slot-msg');
+            if (!date || !time) { showSlotMsg('Please select both date and time.', false); return; }
+            const res  = await fetch('/api/admin/slots', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ slot_date: date, slot_time: time }) });
+            const data = await res.json();
+            if (data.success) { showSlotMsg('✅ Slot added!', true); loadSlots(); }
+            else showSlotMsg('❌ ' + data.message, false);
+        }
+        async function deleteSlot(id) {
+            if (!confirm('Delete this slot?')) return;
+            await fetch('/api/admin/slots/' + id, { method: 'DELETE' });
+            loadSlots();
+        }
+        async function toggleSlot(id, val) {
+            await fetch('/api/admin/slots/' + id, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ is_available: val }) });
+            loadSlots();
+        }
+        function showSlotMsg(text, ok) {
+            const el = document.getElementById('slot-msg');
+            el.textContent = text;
+            el.style.display = 'block';
+            el.style.color   = ok ? '#4ade80' : '#f87171';
+        }
+
+        // ── 2FA Setup ─────────────────────────────────────────────────────
+        async function setup2FA() {
+            try {
+                const res  = await fetch('/api/admin/2fa/setup', { method: 'POST' });
+                const data = await res.json();
+                if (!data.success) { showToast(data.message || 'Setup failed', 'error'); return; }
+                document.getElementById('totp-secret').textContent = data.secret;
+                document.getElementById('qr-section').style.display = 'block';
+                const qrDiv = document.getElementById('qr-code');
+                qrDiv.innerHTML = '';
+                new QRCode(qrDiv, { text: data.uri, width: 160, height: 160, colorDark: '#000', colorLight: '#fff' });
+            } catch(e) { showToast('Error setting up 2FA', 'error'); }
+        }
+        async function verify2FA() {
+            const code = document.getElementById('totp-code').value.trim();
+            const msg  = document.getElementById('twofa-msg');
+            if (code.length !== 6) { msg.textContent = 'Enter the 6-digit code.'; msg.style.color = '#f87171'; msg.style.display = 'block'; return; }
+            const res  = await fetch('/api/admin/2fa/verify', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ code }) });
+            const data = await res.json();
+            msg.style.display = 'block';
+            if (data.success) { msg.textContent = '✅ 2FA verified and active!'; msg.style.color = '#4ade80'; showToast('✅ 2FA is now active on your account', 'success'); }
+            else { msg.textContent = '❌ ' + data.message; msg.style.color = '#f87171'; }
+        }
+
+        // Auto-load when tabs open
+        const _origSwitch = switchTab;
+        function switchTab(tabName, el) {
+            _origSwitch(tabName, el);
+            if (tabName === 'analytics') loadAnalytics();
+            if (tabName === 'slots')     loadSlots();
+        }
     </script>
 </body>
 </html>

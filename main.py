@@ -606,8 +606,13 @@ async def google_callback(request: Request, code: str = None, state: str = None,
         logger.error("[OAuth] Network error during token exchange: %s", exc)
         return RedirectResponse(url="/login?error=google_network_error")
     except Exception as exc:
+        import traceback
+        _tb = traceback.format_exc()
         logger.exception("[OAuth] Unexpected error in Google callback: %s", exc)
-        return RedirectResponse(url="/login?error=google_server_error")
+        # ── TEMP DEBUG: expose real error in URL so we can diagnose ──
+        import urllib.parse as _up
+        _msg = _up.quote(str(exc)[:200])
+        return RedirectResponse(url=f"/login?error=debug_{_msg}")
 
 
 @app.post("/api/appointments")

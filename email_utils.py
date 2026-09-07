@@ -9,7 +9,7 @@ GMAIL_APP_PASSWORD= os.getenv("GMAIL_APP_PASSWORD", "")
 CLINIC_NAME       = "Crown & Craft Dental Clinic"
 CLINIC_PHONE      = "+91 99493 35358"
 CLINIC_ADDRESS    = "123 Dental Avenue, Banjara Hills, Hyderabad"
-BASE_URL          = os.getenv("BASE_URL", "https://crown-and-craft-dental-clinic-2153.vercel.app")
+BASE_URL          = os.getenv("BASE_URL", "https://crown-and-craft-dental-clinic.vercel.app")
 
 # ── shared HTML wrapper ───────────────────────────────────────────────────────
 def _wrap(body_html: str) -> str:

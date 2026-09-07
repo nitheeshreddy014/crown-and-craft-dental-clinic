@@ -2,7 +2,7 @@
 
 A **complete, production-ready** dental clinic website built with **FastAPI**, **Jinja2**, **Turso (LibSQL)**, and modern **HTML/CSS/JavaScript**. Features a premium animated UI, online appointment booking, patient portal, email notifications, blog, analytics dashboard, 2FA, and more — all deployed on **Vercel** for free.
 
-🌐 **Live:** [crown-and-craft-dental-clinic-2153.vercel.app](https://crown-and-craft-dental-clinic-2153.vercel.app)
+🌐 **Live:** [crown-and-craft-dental-clinic.vercel.app](https://crown-and-craft-dental-clinic.vercel.app)
 
 ---
 

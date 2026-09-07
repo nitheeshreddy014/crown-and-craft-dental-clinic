@@ -72,3 +72,90 @@ class ContactForm(BaseModel):
 class LoginForm(BaseModel):
     username: str
     password: str
+
+
+class RegisterForm(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = ""
+    password: str
+    confirm_password: str
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v):
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Name must be at least 2 characters")
+        return v.strip()
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("Invalid email address")
+        return v.strip().lower()
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
+
+
+class ForgotPasswordForm(BaseModel):
+    email: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("Invalid email")
+        return v.strip().lower()
+
+
+class ResetPasswordForm(BaseModel):
+    token: str
+    password: str
+    confirm_password: str
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
+
+
+class ProfileUpdateForm(BaseModel):
+    name: str
+    phone: Optional[str] = ""
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v):
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Name must be at least 2 characters")
+        return v.strip()
+
+
+class SlotForm(BaseModel):
+    slot_date: str
+    slot_time: str
+
+    @field_validator("slot_date", "slot_time")
+    @classmethod
+    def validate_required(cls, v):
+        if not v or not v.strip():
+            raise ValueError("This field is required")
+        return v.strip()
+
+
+class DentalRecordForm(BaseModel):
+    file_url: str
+    file_name: str
+    record_type: Optional[str] = "General"
+
+
+class TOTPVerifyForm(BaseModel):
+    code: str

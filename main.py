@@ -400,7 +400,6 @@ async def send_daily_reminders(request: Request):
     return JSONResponse(content={"success": True, "reminders_sent": sent, "total": len(apts)})
 
 @app.post("/api/register")
-
 async def register_user(request: Request):
     body = await request.json()
     name = body.get("name", "").strip()
@@ -582,7 +581,8 @@ async def google_callback(request: Request, code: str = None, state: str = None,
         if not check_email_exists(email):
             create_user(
                 name=name, email=email, phone="",
-                password_hash=_hash_pw(secrets.token_urlsafe(32))
+                password_hash=_hash_pw(secrets.token_urlsafe(32)),
+                auth_provider="google"
             )
             logger.info("[OAuth] New user created via Google: %s", email)
 

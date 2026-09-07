@@ -50,7 +50,17 @@ def _turso_run(sql, params=None):
         raise RuntimeError(f"Turso HTTP {e.code}: {e.read().decode()}") from e
     except urllib.error.URLError as e:
         raise RuntimeError(f"Turso connection error: {e.reason}") from e
-    res  = body["results"][0]["response"]["result"]
+
+    # Guard against Turso returning an error result (type == "error" has no "result" key)
+    result_wrapper = body["results"][0]
+    if result_wrapper.get("type") == "error":
+        err = result_wrapper.get("error", {})
+        raise RuntimeError(f"Turso error: {err.get('message', result_wrapper)}")
+    response = result_wrapper.get("response", {})
+    if response.get("type") == "error":
+        raise RuntimeError(f"Turso response error: {response.get('error', response)}")
+
+    res  = response["result"]
     cols = [c["name"] for c in res["cols"]]
     rows = [dict(zip(cols, (_turso_cast(c) for c in row))) for row in res["rows"]]
     raw_id = res.get("last_insert_rowid")
@@ -66,11 +76,12 @@ def _run(sql, params=None):
     return _turso_run(sql, params)
 
 def _safe_alter(sql):
-    """Run ALTER TABLE — silently ignore duplicate-column errors."""
+    """Run ALTER TABLE — silently ignore duplicate-column / already-exists errors."""
     try:
         _run(sql)
     except Exception as e:
-        if "duplicate column" not in str(e).lower():
+        msg = str(e).lower()
+        if "duplicate column" not in msg and "already exists" not in msg:
             raise
 
 

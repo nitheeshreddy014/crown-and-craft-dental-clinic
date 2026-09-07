@@ -17,11 +17,14 @@ def _turso_arg(v):
 
 
 def _turso_cast(cell):
-    """Convert a Turso response cell → Python value."""
-    t, v = cell["type"], cell["value"]
+    """Convert a Turso response cell → Python value.
+    Turso omits the 'value' key entirely for NULL cells, so use .get().
+    """
+    t = cell["type"]
+    v = cell.get("value")          # NULL cells have no 'value' key → KeyError fix
     if t == "null":    return None
-    if t == "integer": return int(v)
-    if t == "float":   return float(v)
+    if t == "integer": return int(v) if v is not None else None
+    if t == "float":   return float(v) if v is not None else None
     return v
 
 

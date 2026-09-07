@@ -278,6 +278,7 @@
                     <p>Contact form submissions will appear here.</p>
                 </div>
                 {% endif %}
+            </div>
             <!-- ===== ANALYTICS TAB ===== -->
             <div class="tab-content" id="tab-analytics">
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px">
@@ -368,6 +369,8 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             const tabEl = document.getElementById('tab-' + tabName);
             if (tabEl) tabEl.classList.add('active');
+            if (tabName === 'analytics') loadAnalytics();
+            if (tabName === 'slots') loadSlots();
             closeSidebar();
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('show'); }
@@ -512,13 +515,7 @@
             else { msg.textContent = '❌ ' + data.message; msg.style.color = '#f87171'; }
         }
 
-        // Auto-load when tabs open
-        const _origSwitch = switchTab;
-        function switchTab(tabName, el) {
-            _origSwitch(tabName, el);
-            if (tabName === 'analytics') loadAnalytics();
-            if (tabName === 'slots')     loadSlots();
-        }
+
     </script>
 </body>
 </html>

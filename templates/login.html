@@ -80,9 +80,11 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;bac
 .str-fill{height:100%;width:0;border-radius:4px;transition:width .3s,background .3s}
 .str-lbl{font-size:.7rem;float:right;margin-top:4px;color:rgba(255,255,255,.35)}
 .terms{display:flex;align-items:flex-start;gap:8px;margin-bottom:20px}
-.terms input{display:none}
-.terms label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4}
-.terms a{color:#0ea5e9;text-decoration:none}.terms a:hover{text-decoration:underline}
+.terms input[type=checkbox]{display:none}
+.terms label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4;user-select:none}
+.terms a{color:#0ea5e9;text-decoration:none;pointer-events:auto;position:relative;z-index:1}.terms a:hover{text-decoration:underline}
+.terms input[type=checkbox]:checked+.cc{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border-color:transparent}
+.terms input[type=checkbox]:checked+.cc::after{display:block}
 .sn{text-align:center;font-size:.76rem;color:rgba(255,255,255,.28);padding:14px 0 0;border-top:1px solid rgba(255,255,255,.05);margin-top:8px}
 .bl-link{display:block;text-align:center;margin-top:18px;color:rgba(255,255,255,.3);text-decoration:none;font-size:.84rem;transition:all .3s}
 .bl-link:hover{color:#0ea5e9;transform:translateX(-4px)}

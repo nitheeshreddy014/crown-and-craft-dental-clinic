@@ -93,6 +93,29 @@
         .top-nav .nav-right { display:flex; gap:12px; align-items:center; }
         .logout-link { font-size:.82rem; color:rgba(255,255,255,.4); text-decoration:none; padding:6px 12px; border:1px solid rgba(255,255,255,.1); border-radius:6px; }
         .logout-link:hover { color:#f87171; border-color:rgba(239,68,68,.3); }
+
+        /* ── Setup Modal ── */
+        .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+        .setup-overlay.open{opacity:1;pointer-events:all}
+        .setup-modal{background:#1e293b;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px 32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.5);transform:translateY(20px);transition:transform .3s}
+        .setup-overlay.open .setup-modal{transform:translateY(0)}
+        .setup-modal h2{font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:6px}
+        .setup-modal p{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.5}
+        .setup-modal .fg{margin-bottom:20px}
+        .setup-modal .fg label{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:7px;text-transform:uppercase;letter-spacing:.04em}
+        .setup-modal .fg input{width:100%;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;transition:border-color .25s;box-sizing:border-box}
+        .setup-modal .fg input:focus{border-color:#0ea5e9;background:rgba(14,165,233,.06)}
+        .setup-modal .fg input::placeholder{color:rgba(255,255,255,.2)}
+        .setup-actions{display:flex;gap:10px;margin-top:4px}
+        .setup-save{flex:1;padding:12px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+        .setup-save:hover{opacity:.88}
+        .setup-save:disabled{opacity:.5;cursor:not-allowed}
+        .setup-skip{padding:12px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s}
+        .setup-skip:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8)}
+        .setup-msg{font-size:.82rem;margin-top:12px;display:none}
+        .setup-msg.show{display:block}
+        .setup-msg.err{color:#fca5a5}
+        .setup-msg.ok{color:#4ade80}
     </style>
 </head>
 <body>
@@ -215,6 +238,23 @@
     </div>
 
 </div>
+<!-- ===== PHONE SETUP MODAL ===== -->
+<div class="setup-overlay" id="setup-overlay">
+    <div class="setup-modal">
+        <h2>📱 Complete Your Profile</h2>
+        <p>Welcome! Add your phone number so we can confirm appointments and send reminders. You can skip this and add it later from your profile.</p>
+        <div class="fg">
+            <label>Phone Number</label>
+            <input type="tel" id="setup-phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel">
+        </div>
+        <div class="setup-actions">
+            <button class="setup-save" id="setup-save-btn" onclick="setupSave()">💾 Save &amp; Continue</button>
+            <button class="setup-skip" onclick="setupSkip()">Skip for now</button>
+        </div>
+        <div class="setup-msg" id="setup-msg"></div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -313,6 +353,63 @@ async function deleteRecord(id) {
         else showToast('❌ ' + data.message);
     } catch { showToast('❌ Connection error.'); }
 }
+
+// ── Setup Modal ──────────────────────────────────────────────────────────────
+function setupOpen() {
+    document.getElementById('setup-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('setup-phone').focus(), 300);
+}
+function setupClose() {
+    document.getElementById('setup-overlay').classList.remove('open');
+    // Remove ?setup=1 from URL without reloading the page
+    const url = new URL(window.location.href);
+    url.searchParams.delete('setup');
+    history.replaceState({}, '', url.pathname + (url.search || ''));
+}
+async function setupSave() {
+    const phone = document.getElementById('setup-phone').value.trim();
+    const msg   = document.getElementById('setup-msg');
+    const btn   = document.getElementById('setup-save-btn');
+    msg.className = 'setup-msg'; msg.textContent = '';
+    if (!phone) {
+        msg.textContent = 'Please enter a phone number.';
+        msg.className = 'setup-msg show err'; return;
+    }
+    // Re-use the existing name already displayed in the profile form
+    const name = document.getElementById('p-name').value.trim() || '{{ user.name if user else "" }}';
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+        const res  = await fetch('/api/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone })
+        });
+        const data = await res.json();
+        if (data.success) {
+            msg.textContent = '✅ Phone saved!';
+            msg.className = 'setup-msg show ok';
+            // Update the visible phone in the user card
+            const pPhone = document.getElementById('p-phone');
+            if (pPhone) pPhone.value = phone;
+            setTimeout(() => { setupClose(); showToast('✅ Profile updated!'); }, 900);
+        } else {
+            msg.textContent = data.message || 'Could not save. Please try again.';
+            msg.className = 'setup-msg show err';
+            btn.disabled = false; btn.textContent = '💾 Save & Continue';
+        }
+    } catch {
+        msg.textContent = 'Connection error. Please try again.';
+        msg.className = 'setup-msg show err';
+        btn.disabled = false; btn.textContent = '💾 Save & Continue';
+    }
+}
+function setupSkip() { setupClose(); }
+
+// ── Auto-open modal if ?setup=1 is present in the URL ────────────────────────
+(function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('setup') === '1') { setupOpen(); }
+})();
 </script>
 </body>
 </html>

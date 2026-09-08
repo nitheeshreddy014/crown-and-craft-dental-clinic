@@ -447,6 +447,11 @@ async def login(form: LoginForm):
         return resp
     # Check patient
     user = get_user_by_email(uname)
+    if user and user.get("auth_provider") == "google":
+        return JSONResponse(status_code=401, content={
+            "success": False,
+            "message": "This account uses Google Sign-In. Please click 'Continue with Google' to log in."
+        })
     if user and _verify_pw(form.password, user["password_hash"]):
         token = create_token(user["email"], "patient", user["name"])
         resp = JSONResponse(content={"success": True, "message": f"Welcome back, {user['name']}!", "redirect_url": "/my-appointments"})
@@ -598,8 +603,12 @@ async def google_callback(request: Request, code: str = None, state: str = None,
         display_name = user["name"] if user else name
 
         # ── Step 8: Issue session JWT and redirect ────────────────────────────
+        # If the user has no phone number on file, send them to setup flow
+        is_missing_phone = not (user and user.get("phone", "").strip())
+        redirect_url = "/my-appointments?setup=1" if is_missing_phone else "/my-appointments"
+
         token = create_token(email, "patient", display_name)
-        resp  = RedirectResponse(url="/my-appointments", status_code=302)
+        resp  = RedirectResponse(url=redirect_url, status_code=302)
         resp.set_cookie(
             "admin_token", token,
             httponly=True, max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600, samesite="lax"

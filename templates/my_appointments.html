@@ -6,12 +6,12 @@
     <title>My Patient Portal | {{ clinic_name }}</title>
     <link rel="stylesheet" href="/static/css/style.css"/>
     <style>
-        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; min-height: 100vh; }
+        body { background: #f8fafc; color: #334155; font-family: 'Inter', sans-serif; min-height: 100vh; }
         .page-wrap { max-width: 960px; margin: 0 auto; padding: 36px 20px; }
         /* Tabs */
         .tab-nav{display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:12px;padding:4px;margin-bottom:28px;border:1px solid rgba(255,255,255,.07);width:fit-content;flex-wrap:wrap}
         .tab-btn{padding:9px 20px;background:none;border:none;color:rgba(255,255,255,.45);font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;border-radius:8px;cursor:pointer;transition:all .2s}
-        .tab-btn.active{background:linear-gradient(135deg,#0ea5e9,#8b5cf6);color:#fff}
+        .tab-btn.active{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#0f172a}
         .tab-content{display:none}.tab-content.active{display:block}
         /* Cancel btn */
         .cancel-btn{padding:6px 14px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:8px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-top:6px}
@@ -20,10 +20,10 @@
         .profile-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px}
         .fg{margin-bottom:18px}
         .fg label{display:block;font-size:.8rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:7px}
-        .fg input{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s}
-        .fg input:focus{border-color:#0ea5e9}
+        .fg input{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s}
+        .fg input:focus{border-color:#0d9488}
         .fg input::placeholder{color:rgba(255,255,255,.25)}
-        .save-btn{padding:12px 28px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;}
+        .save-btn{padding:12px 28px;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;}
         .msg-box{padding:11px 14px;border-radius:10px;font-size:.84rem;margin-bottom:16px;display:none}
         .msg-box.show{display:block}
         .msg-ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80}
@@ -31,65 +31,65 @@
         /* Records */
         .upload-box{background:rgba(255,255,255,.03);border:2px dashed rgba(255,255,255,.1);border-radius:14px;padding:28px;text-align:center;margin-bottom:20px}
         .upload-form{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:14px}
-        .upload-form input[type=text]{width:100%;max-width:420px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;outline:none}
-        .upload-form input[type=text]:focus{border-color:#0ea5e9}
-        .upload-form select{padding:10px 14px;background:rgba(30,41,59,.9);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;outline:none;cursor:pointer}
-        .upload-btn{padding:10px 24px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:8px;color:#fff;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;}
+        .upload-form input[type=text]{width:100%;max-width:420px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.88rem;outline:none}
+        .upload-form input[type=text]:focus{border-color:#0d9488}
+        .upload-form select{padding:10px 14px;background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.88rem;outline:none;cursor:pointer}
+        .upload-btn{padding:10px 24px;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;border-radius:8px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;}
         .rec-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
         .rec-icon{font-size:1.5rem;flex-shrink:0}
         .rec-info{flex:1}
-        .rec-info h4{font-size:.9rem;font-weight:600;color:#fff;margin-bottom:3px}
+        .rec-info h4{font-size:.9rem;font-weight:600;color:#0f172a;margin-bottom:3px}
         .rec-info p{font-size:.76rem;color:rgba(255,255,255,.4)}
-        .rec-view{padding:6px 12px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.25);color:#0ea5e9;border-radius:6px;font-size:.76rem;font-weight:600;text-decoration:none;margin-right:6px}
+        .rec-view{padding:6px 12px;background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.25);color:#0d9488;border-radius:6px;font-size:.76rem;font-weight:600;text-decoration:none;margin-right:6px}
         .rec-del{padding:6px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
         /* Toast */
-        .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(30,41,59,.95);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 24px;font-size:.84rem;color:#e2e8f0;z-index:999;opacity:0;transition:all .4s;white-space:nowrap}
+        .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 24px;font-size:.84rem;color:#334155;z-index:999;opacity:0;transition:all .4s;white-space:nowrap}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
         .edit-profile-btn{padding:8px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:8px;font-size:.8rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-left:auto}
-        .edit-profile-btn:hover{border-color:#0ea5e9;color:#fff}
+        .edit-profile-btn:hover{border-color:#0d9488;color:#0f172a}
 
         /* Header */
         .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; flex-wrap:wrap; gap:16px; }
-        .page-header h1 { font-size:1.8rem; font-weight:700; color:#fff; }
-        .page-header h1 span { background: linear-gradient(135deg,#0ea5e9,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .page-header h1 { font-size:1.8rem; font-weight:700; color:#0f172a; }
+        .page-header h1 span { background: linear-gradient(135deg,#0d9488,#2dd4bf); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
         .header-actions { display:flex; gap:10px; }
-        .btn-book  { padding:10px 20px; background:linear-gradient(135deg,#0ea5e9,#8b5cf6); color:#fff; border-radius:8px; text-decoration:none; font-size:.85rem; font-weight:600; }
+        .btn-book  { padding:10px 20px; background:linear-gradient(135deg,#0d9488,#2dd4bf); color:#0f172a; border-radius:8px; text-decoration:none; font-size:.85rem; font-weight:600; }
         .btn-home  { padding:10px 20px; border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.7); border-radius:8px; text-decoration:none; font-size:.85rem; }
-        .btn-home:hover { border-color:rgba(14,165,233,.5); color:#fff; }
+        .btn-home:hover { border-color:rgba(13,148,136,.5); color:#0f172a; }
 
         /* User card */
         .user-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:20px 24px; margin-bottom:28px; display:flex; align-items:center; gap:16px; }
-        .user-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#0ea5e9,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:700; color:#fff; flex-shrink:0; }
-        .user-info h3 { font-size:1rem; font-weight:600; color:#fff; margin-bottom:3px; }
+        .user-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#0d9488,#2dd4bf); display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:700; color:#0f172a; flex-shrink:0; }
+        .user-info h3 { font-size:1rem; font-weight:600; color:#0f172a; margin-bottom:3px; }
         .user-info p  { font-size:.82rem; color:rgba(255,255,255,.45); }
         .user-stats { margin-left:auto; text-align:right; }
-        .user-stats .stat-num { font-size:1.6rem; font-weight:700; color:#0ea5e9; }
+        .user-stats .stat-num { font-size:1.6rem; font-weight:700; color:#0d9488; }
         .user-stats .stat-lbl { font-size:.75rem; color:rgba(255,255,255,.4); }
 
         /* Appointment cards */
         .apt-list { display:flex; flex-direction:column; gap:14px; }
         .apt-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:20px 24px; display:flex; align-items:flex-start; gap:18px; transition:border-color .2s; }
-        .apt-card:hover { border-color:rgba(14,165,233,.3); }
-        .apt-icon { width:44px; height:44px; border-radius:10px; background:rgba(14,165,233,.12); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+        .apt-card:hover { border-color:rgba(13,148,136,.3); }
+        .apt-icon { width:44px; height:44px; border-radius:10px; background:rgba(13,148,136,.12); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
         .apt-main { flex:1; }
-        .apt-service { font-size:.95rem; font-weight:600; color:#fff; margin-bottom:6px; }
+        .apt-service { font-size:.95rem; font-weight:600; color:#0f172a; margin-bottom:6px; }
         .apt-meta { display:flex; flex-wrap:wrap; gap:12px; }
         .apt-meta span { font-size:.78rem; color:rgba(255,255,255,.5); display:flex; align-items:center; gap:4px; }
         .apt-badge { padding:5px 12px; border-radius:20px; font-size:.75rem; font-weight:600; white-space:nowrap; }
         .badge-Pending   { background:rgba(234,179,8,.12);  color:#fbbf24; border:1px solid rgba(234,179,8,.25); }
         .badge-Confirmed { background:rgba(34,197,94,.12);  color:#4ade80; border:1px solid rgba(34,197,94,.25); }
-        .badge-Completed { background:rgba(14,165,233,.12); color:#38bdf8; border:1px solid rgba(14,165,233,.25); }
+        .badge-Completed { background:rgba(13,148,136,.12); color:#5eead4; border:1px solid rgba(13,148,136,.25); }
         .badge-Cancelled { background:rgba(239,68,68,.12);  color:#f87171; border:1px solid rgba(239,68,68,.25); }
 
         /* Empty state */
         .empty-state { text-align:center; padding:64px 20px; }
         .empty-state .empty-icon { font-size:3.5rem; margin-bottom:16px; }
-        .empty-state h3 { font-size:1.2rem; font-weight:600; color:#fff; margin-bottom:8px; }
+        .empty-state h3 { font-size:1.2rem; font-weight:600; color:#0f172a; margin-bottom:8px; }
         .empty-state p  { font-size:.88rem; color:rgba(255,255,255,.4); margin-bottom:24px; }
 
         .top-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; background:rgba(255,255,255,.03); border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:0; }
-        .top-nav .logo { font-size:1.1rem; font-weight:700; color:#fff; text-decoration:none; }
-        .top-nav .logo span { color:#0ea5e9; }
+        .top-nav .logo { font-size:1.1rem; font-weight:700; color:#0f172a; text-decoration:none; }
+        .top-nav .logo span { color:#0d9488; }
         .top-nav .nav-right { display:flex; gap:12px; align-items:center; }
         .logout-link { font-size:.82rem; color:rgba(255,255,255,.4); text-decoration:none; padding:6px 12px; border:1px solid rgba(255,255,255,.1); border-radius:6px; }
         .logout-link:hover { color:#f87171; border-color:rgba(239,68,68,.3); }
@@ -97,17 +97,17 @@
         /* ── Setup Modal ── */
         .setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
         .setup-overlay.open{opacity:1;pointer-events:all}
-        .setup-modal{background:#1e293b;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px 32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.5);transform:translateY(20px);transition:transform .3s}
+        .setup-modal{background:#ffffff;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:36px 32px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.5);transform:translateY(20px);transition:transform .3s}
         .setup-overlay.open .setup-modal{transform:translateY(0)}
-        .setup-modal h2{font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:6px}
+        .setup-modal h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:6px}
         .setup-modal p{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.5}
         .setup-modal .fg{margin-bottom:20px}
         .setup-modal .fg label{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:7px;text-transform:uppercase;letter-spacing:.04em}
-        .setup-modal .fg input{width:100%;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;transition:border-color .25s;box-sizing:border-box}
-        .setup-modal .fg input:focus{border-color:#0ea5e9;background:rgba(14,165,233,.06)}
+        .setup-modal .fg input{width:100%;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;transition:border-color .25s;box-sizing:border-box}
+        .setup-modal .fg input:focus{border-color:#0d9488;background:rgba(13,148,136,.06)}
         .setup-modal .fg input::placeholder{color:rgba(255,255,255,.2)}
         .setup-actions{display:flex;gap:10px;margin-top:4px}
-        .setup-save{flex:1;padding:12px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+        .setup-save{flex:1;padding:12px;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;border-radius:10px;color:#0f172a;font-family:'Inter',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:opacity .2s}
         .setup-save:hover{opacity:.88}
         .setup-save:disabled{opacity:.5;cursor:not-allowed}
         .setup-skip{padding:12px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s}
@@ -201,7 +201,7 @@
     <div class="tab-content" id="tab-records">
         <div class="upload-box">
             <p style="color:rgba(255,255,255,.6);font-size:.92rem;font-weight:600">📤 Upload a Dental Record</p>
-            <p style="color:rgba(255,255,255,.35);font-size:.8rem;margin-top:6px">Upload your file to <a href="https://cloudinary.com" target="_blank" style="color:#0ea5e9">Cloudinary.com</a> (free, no card), then paste the URL below.</p>
+            <p style="color:rgba(255,255,255,.35);font-size:.8rem;margin-top:6px">Upload your file to <a href="https://cloudinary.com" target="_blank" style="color:#0d9488">Cloudinary.com</a> (free, no card), then paste the URL below.</p>
             <div class="upload-form">
                 <input type="text" id="rec-url"  placeholder="Paste Cloudinary file URL…">
                 <input type="text" id="rec-name" placeholder="File name (e.g. X-Ray Jan 2024)">
@@ -223,7 +223,7 @@
     <!-- ===== PROFILE TAB ===== -->
     <div class="tab-content" id="tab-profile">
         <div class="profile-form">
-            <h3 style="color:#fff;font-size:1rem;font-weight:700;margin-bottom:20px">👤 Edit Your Profile</h3>
+            <h3 style="color:#0f172a;font-size:1rem;font-weight:700;margin-bottom:20px">👤 Edit Your Profile</h3>
             <div class="msg-box msg-ok"  id="profile-ok"></div>
             <div class="msg-box msg-err" id="profile-err"></div>
             <div class="fg"><label>Full Name</label><input type="text" id="p-name" value="{{ user.name if user else '' }}" placeholder="Your full name"></div>

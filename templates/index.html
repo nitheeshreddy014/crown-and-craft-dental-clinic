@@ -52,8 +52,8 @@
                     <path d="M50 5 C30 5 15 20 15 40 C15 55 20 65 25 80 C28 90 30 100 35 110 C38 115 42 118 50 118 C58 118 62 115 65 110 C70 100 72 90 75 80 C80 65 85 55 85 40 C85 20 70 5 50 5Z" fill="none" stroke="url(#toothGrad)" stroke-width="3" class="tooth-path"/>
                     <defs>
                         <linearGradient id="toothGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#0ea5e9"/>
-                            <stop offset="100%" style="stop-color:#8b5cf6"/>
+                            <stop offset="0%" style="stop-color:#0d9488"/>
+                            <stop offset="100%" style="stop-color:#2dd4bf"/>
                         </linearGradient>
                     </defs>
                 </svg>
@@ -179,8 +179,8 @@
                     <div style="text-align:center; margin:16px 0;">
                         <img src="/static/images/maneesh.png" alt="Dr. Maneesh Reddy Pocharam" 
                              style="width:160px; height:160px; border-radius:50%; object-fit:cover; 
-                             border:4px solid rgba(14,165,233,0.4); 
-                             box-shadow:0 8px 30px rgba(14,165,233,0.2);">
+                             border:4px solid rgba(13,148,136,0.4); 
+                             box-shadow:0 8px 30px rgba(13,148,136,0.2);">
                     </div>
                     <h3>{{ doctor_name }}</h3>
                     <p>Specializing in Prosthodontics, Dr. Maneesh Reddy Pocharam (BDS, MDS) focuses on precise, modern, and aesthetically refined dental care — ensuring every treatment is built around comfort, clarity, and long-term oral health.</p>
@@ -753,16 +753,16 @@
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:28px">
                 {% for post in blog_posts %}
-                <a href="/blog/{{ post.slug }}" style="display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;text-decoration:none;color:inherit;transition:all .3s" onmouseover="this.style.borderColor='rgba(14,165,233,.35)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
-                    <div style="font-size:.72rem;font-weight:600;color:#0ea5e9;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🦷 Dental Tips</div>
-                    <h3 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4">{{ post.title }}</h3>
+                <a href="/blog/{{ post.slug }}" style="display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;text-decoration:none;color:inherit;transition:all .3s" onmouseover="this.style.borderColor='rgba(13,148,136,.35)'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
+                    <div style="font-size:.72rem;font-weight:600;color:#0d9488;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🦷 Dental Tips</div>
+                    <h3 style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:8px;line-height:1.4">{{ post.title }}</h3>
                     <p style="font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px">{{ post.summary }}</p>
-                    <span style="color:#0ea5e9;font-size:.82rem;font-weight:600">Read more →</span>
+                    <span style="color:#0d9488;font-size:.82rem;font-weight:600">Read more →</span>
                 </a>
                 {% endfor %}
             </div>
             <div style="text-align:center">
-                <a href="/blog" style="display:inline-block;padding:12px 30px;border:1px solid rgba(14,165,233,.35);color:#0ea5e9;text-decoration:none;border-radius:10px;font-size:.88rem;font-weight:600;transition:all .3s" onmouseover="this.style.background='rgba(14,165,233,.1)'" onmouseout="this.style.background='transparent'">View All Articles →</a>
+                <a href="/blog" style="display:inline-block;padding:12px 30px;border:1px solid rgba(13,148,136,.35);color:#0d9488;text-decoration:none;border-radius:10px;font-size:.88rem;font-weight:600;transition:all .3s" onmouseover="this.style.background='rgba(13,148,136,.1)'" onmouseout="this.style.background='transparent'">View All Articles →</a>
             </div>
         </div>
     </section>

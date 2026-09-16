@@ -1,5 +1,5 @@
 /* ============================================================
-   SmileCraft Dental Clinic - Main JavaScript
+   Crown & Craft Dental Clinic - Main JavaScript
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -139,26 +139,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (track) {
         const cards = track.querySelectorAll('.testimonial-card');
         totalSlides = cards.length;
-        function goToSlide(index) {
-            currentSlide = index;
-            track.style.transform = 'translateX(' + (-index * 100) + '%)';
-            dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); });
-        }
-        function nextSlide() { goToSlide((currentSlide + 1) % totalSlides); }
-        function startAutoRotate() { slideInterval = setInterval(nextSlide, 5000); }
-        function stopAutoRotate() { clearInterval(slideInterval); }
-        startAutoRotate();
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                goToSlide(parseInt(dot.getAttribute('data-index')));
-                stopAutoRotate();
-                startAutoRotate();
+        // BUG FIX #9: guard against divide-by-zero when no cards exist
+        if (totalSlides > 0) {
+            function goToSlide(index) {
+                currentSlide = index;
+                track.style.transform = 'translateX(' + (-index * 100) + '%)';
+                dots.forEach((dot, i) => { dot.classList.toggle('active', i === index); });
+            }
+            function nextSlide() { goToSlide((currentSlide + 1) % totalSlides); }
+            function startAutoRotate() { slideInterval = setInterval(nextSlide, 5000); }
+            function stopAutoRotate() { clearInterval(slideInterval); }
+            startAutoRotate();
+            dots.forEach(dot => {
+                const idx = parseInt(dot.getAttribute('data-index'));
+                if (!isNaN(idx)) { // BUG FIX #9: guard against NaN index
+                    dot.addEventListener('click', () => {
+                        goToSlide(idx);
+                        stopAutoRotate();
+                        startAutoRotate();
+                    });
+                }
             });
-        });
-        const sliderContainer = document.querySelector('.testimonials-slider');
-        if (sliderContainer) {
-            sliderContainer.addEventListener('mouseenter', stopAutoRotate);
-            sliderContainer.addEventListener('mouseleave', startAutoRotate);
+            const sliderContainer = document.querySelector('.testimonials-slider');
+            if (sliderContainer) {
+                sliderContainer.addEventListener('mouseenter', stopAutoRotate);
+                sliderContainer.addEventListener('mouseleave', startAutoRotate);
+            }
         }
     }
 
@@ -220,8 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(formData)
                 });
                 const data = await response.json();
-                if (data.success) {   
-                showToast(data.message || 'Appointment booked successfully!', 'success');btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
+                if (data.success) {
+                    // BUG FIX #7: reset form after successful booking (was missing)
+                    appointmentForm.reset();
+                    showToast(data.message || 'Appointment booked successfully!', 'success');
+                    btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
                 } else {
                     showToast(data.message || 'Failed to book appointment. Please try again.', 'error');
                     btnText.style.display = 'flex'; btnLoader.style.display = 'none'; submitBtn.disabled = false;
@@ -279,7 +288,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
         const toast = document.createElement('div');
         toast.className = 'toast toast-' + type;
-        toast.innerHTML = '<div class="toast-icon">' + (type === 'success' ? '\u2705' : '\u274C') + '</div>' +
+        // BUG FIX #10: safe DOM methods instead of innerHTML to prevent XSS
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'toast-icon';
+        iconDiv.textContent = type === 'success' ? '✅' : '❌';
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'toast-message';
+        msgDiv.textContent = message; // textContent safely escapes HTML
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.textContent = '×';
+        closeBtn.onclick = () => toast.remove();
+        toast.appendChild(iconDiv);
+        toast.appendChild(msgDiv);
+        toast.appendChild(closeBtn);
+        // placeholder_removed '\u2705' : '\u274C') + '</div>' +
             '<div class="toast-message">' + message + '</div>' +
             '<button class="toast-close" onclick="this.parentElement.remove()">\u00D7</button>';
         container.appendChild(toast);

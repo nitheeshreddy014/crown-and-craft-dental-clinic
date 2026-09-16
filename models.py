@@ -72,3 +72,22 @@ class ContactForm(BaseModel):
 class LoginForm(BaseModel):
     username: str
     password: str
+
+    # BUG FIX: Added validation to LoginForm (was completely missing before)
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Username or email is required")
+        if len(v.strip()) < 3:
+            raise ValueError("Username must be at least 3 characters")
+        return v.strip()
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v):
+        if not v:
+            raise ValueError("Password is required")
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
